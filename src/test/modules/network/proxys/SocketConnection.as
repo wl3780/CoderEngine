@@ -17,6 +17,8 @@ package test.modules.network.proxys
 	 */
 	public class SocketConnection extends Socket
 	{
+		public var packList:Vector.<Array> = new Vector.<Array>();
+		
 		/**
 		 * 是否和服务器保持连接在
 		 */
@@ -153,7 +155,25 @@ package test.modules.network.proxys
 
 		private function parseResponse():Boolean
 		{
-			return true;
+			if (_buf.bytesAvailable >= 10) {
+//				var packHead:String = _buf.readByte() + "" + _buf.readByte() + "" + _buf.readByte() + "" + _buf.readByte();
+//				if (packHead != "5120") {
+//					return false;
+//				}
+				var logPosition:int = _buf.position;
+				_buf.position += 4;
+				var packLen:int = _buf.readInt();
+				if (packLen > _buf.bytesAvailable) {
+					_buf.position = logPosition;
+					return false;
+				}
+				var packID:int = _buf.readShort();
+				var packData:ByteArray = new ByteArray();
+				packLen -= 2;
+				_buf.readBytes(packData, 0, packLen);
+				return true;
+			}
+			return false;
 		}
 
 		/**
@@ -162,7 +182,7 @@ package test.modules.network.proxys
 		public function sendMessage(packID:int, packData:ByteArray):void
 		{
 			if (_connected) {
-				writeToSocket(packID, packData);				
+				this.writeToSocket(packID, packData);				
 			}
 		}
 

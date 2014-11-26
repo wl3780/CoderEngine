@@ -10,6 +10,7 @@ package test.modules.network.proxys
 	public class SocketProxy extends SubProxy
 	{
 		private var _conn:SocketConnection;
+		private var _heart
 		
 		public function SocketProxy()
 		{
