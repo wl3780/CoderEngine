@@ -5,12 +5,14 @@ package test.modules.network.proxys
 	import com.coder.core.socket.Socket_tos;
 	import com.coder.interfaces.dock.IMessage;
 	
+	import flash.utils.Timer;
+	
 	import test.modules.network.orders.NetworkInternalOrder;
 	
 	public class SocketProxy extends SubProxy
 	{
 		private var _conn:SocketConnection;
-		private var _heart
+		private var _heartTimer:Timer;
 		
 		public function SocketProxy()
 		{

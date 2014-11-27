@@ -7,8 +7,8 @@
 
 	public class Socket_tos extends Proto implements ISocket_tos
 	{
-		private var _bytes:ByteArray;
-		private var _pack_id:int;
+		protected var _bytes:ByteArray;
+		protected var _pack_id:int;
 
 		public function Socket_tos()
 		{
@@ -27,7 +27,6 @@
 		
 		public function encode():ByteArray
 		{
-			this.encoding();
 			return _bytes;
 		}
 		
@@ -80,13 +79,6 @@
 			var head:uint = (value - end) / 4294967296;
 			_bytes.writeInt(head);
 			_bytes.writeUnsignedInt(end);
-		}
-		
-		/**
-		 * 子类通过重写该方法写入数据
-		 */	
-		protected function encoding():void
-		{
 		}
 	}
 }

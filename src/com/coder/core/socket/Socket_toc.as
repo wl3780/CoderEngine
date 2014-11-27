@@ -7,8 +7,8 @@
 
 	public class Socket_toc extends Proto implements ISocket_toc
 	{
-		private var _pack_id:int;
-		private var _bytes:ByteArray;
+		protected var _pack_id:int;
+		protected var _bytes:ByteArray;
 
 		public function Socket_toc()
 		{
@@ -27,8 +27,6 @@
 		public function decode(byte:ByteArray):void
 		{
 			_bytes = byte;
-			this.decoding();
-			this.clear();
 		}
 		
 		override public function toString():String
@@ -74,19 +72,6 @@
 			var head:int = _bytes.readInt();
 			var end:uint = _bytes.readUnsignedInt();
 			return (head * 4294967296) + end;
-		}
-
-		/**
-		 * 子类通过重写该方法读取数据
-		 */		
-		protected function decoding():void
-		{
-		}
-		
-		protected function clear():void
-		{
-			_bytes.clear();
-			_bytes = null;
 		}
 	}
 }

@@ -175,6 +175,50 @@ package test.modules.network.proxys
 			}
 			return false;
 		}
+		
+		private var _readFlag:int;
+		private var _packID:int;
+		private var _packLen:int;
+		public static const PREV_READ:int = 6;
+		private function onSocketData2(evt:ProgressEvent):void
+		{
+			var bytesRest:int = this.bytesAvailable;
+			while (bytesRest) {
+				if (_readFlag == 0) {
+					if (bytesRest >= PREV_READ) {
+						this.readBytes(_buf, _buf.length, PREV_READ);
+						_packLen = _buf.readInt();
+						_packID = _buf.readShort();
+						_packLen -= PREV_READ;
+						_readFlag = 1;
+						bytesRest = this.bytesAvailable;
+					} else {
+						break;
+					}
+				}
+				if (_readFlag == 1) {
+					if (_packLen) {
+						if (bytesRest <= _packLen) {
+							this.readBytes(_buf, _buf.length, bytesRest);
+							_packLen -= bytesRest;
+						} else {
+							this.readBytes(_buf, _buf.length, _packLen);
+							_packLen = 0;
+						}
+					}
+					if (_packLen == 0) {
+						_readFlag = 0;
+						this.handleMessage(_packID, _buf);
+						_buf.clear();
+					}
+					bytesRest = this.bytesAvailable;
+				}
+			}
+		}
+		private function handleMessage(packID:int, packData:ByteArray):void
+		{
+			
+		}
 
 		/**
 		 * 发送信息
@@ -192,6 +236,7 @@ package test.modules.network.proxys
 		 */
 		private function writeToSocket(packID:int, packData:ByteArray):void {
 			var byte:ByteArray = new ByteArray();
+			// 协议头，用于校验（节省资源可以忽略）
 			byte.writeByte(5);
 			byte.writeByte(1);
 			byte.writeByte(2);
@@ -201,8 +246,6 @@ package test.modules.network.proxys
 			byte.writeInt(packLen);
 			byte.writeShort(packID);
 			byte.writeBytes(packData);
-			var random:int = Math.random() * 20140913;
-			byte.writeInt(random);
 			
 			try {
 				this.writeBytes(byte);
