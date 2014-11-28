@@ -55,8 +55,9 @@
 		protected function _errorFunc_(event:IOErrorEvent):void
 		{
 			if (_callError_ != null) {
-				_callError_(path);
+				var tmp:Function = _callError_;
 				_callError_ = null;
+				tmp(path);
 			}
 			_callSuccess_ = null;
 			_callProgress_ = null;
@@ -66,8 +67,9 @@
 		{
 			WealthStoragePort.depositWealth(this.path, this.id);
 			if (_callSuccess_ != null) {
-				_callSuccess_(path);
+				var tmp:Function = _callSuccess_;
 				_callSuccess_ = null;
+				tmp(path);
 			}
 			_callProgress_ = null;
 			_callError_ = null;
