@@ -12,6 +12,12 @@
 		 * @param packageId
 		 * @param module
 		 */			
-		function addPackageHandler(packageId:String, module:IModule):void
+		function addPackageHandler(packageId:String, module:IModule):void;
+		
+		/**
+		 * 添加数据包解释器
+		 * @param pClass
+		 */		
+		function addPackageParser(pClass:Class):void;
     }
 }

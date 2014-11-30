@@ -7,7 +7,6 @@ package test.modules.network.others
 	 */
 	public class SocketEvent extends Event
 	{
-
 		/**
 		 *  掉线
 		 */
@@ -29,25 +28,12 @@ package test.modules.network.others
 		public static const SERVER_ERROR_PARSE:String="server_error_parse";
 
 		/**
-		 * 服务端权限错误
-		 */
-		public static const SERVER_ERROR_POWER:String="server_error_power";
+		 * 命令解释成功
+		 */		
+		public static const SERVER_SUCCESS_PARSE:String="server_success_parse";
 
-		/**
-		 * 验证码错误
-		 */
-		public static const SERVER_ERROR_CODE_AUTH_ERROR:String="server_error_code_auth_error";
+		public var params:Object;
 		
-		/**
-		 * 登录人数过多
-		 * */
-		public static const SERVER_ERROR_USER_TOO_MANY:String="server_error_user_too_many";
-		
-		/**
-		 * 未知错误
-		 */
-		public static const SERVER_ERROR_NO:String="server_error_no";
-
 		/**
 		 * construct
 		 * @param type		事件类型

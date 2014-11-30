@@ -17,8 +17,6 @@ package test.modules.network.proxys
 	 */
 	public class SocketConnection extends Socket
 	{
-		public var packList:Vector.<Array> = new Vector.<Array>();
-		
 		/**
 		 * 是否和服务器保持连接在
 		 */
@@ -217,7 +215,9 @@ package test.modules.network.proxys
 		}
 		private function handleMessage(packID:int, packData:ByteArray):void
 		{
-			
+			var event:SocketEvent = new SocketEvent(SocketEvent.SERVER_SUCCESS_PARSE);
+			event.params = {packID:packID, packData:packData};
+			this.dispatchEvent(event);
 		}
 
 		/**

@@ -39,6 +39,10 @@
 		{
 		}
 		
+		/**
+		 * 注册处理器
+		 * @param args
+		 */		
 		public function registerSubProxy(... args):void
 		{
 			var proxy:SubProxy;
@@ -60,11 +64,27 @@
 			}
 		}
 		
+		/**
+		 * 注册订阅器
+		 * @param args
+		 */		
 		public function registerSubPackage(... args):void
 		{
 			var module:INetworkModule = ModuleDock.getInstance().takeModule(ModuleDock.NETWORK_MODULE_NAME) as INetworkModule;
 			for each (var packageId:String in args) {
 				module.addPackageHandler(packageId, this);
+			}
+		}
+		
+		/**
+		 * 注册包解释器
+		 * @param args
+		 */		
+		public function registerPackParser(... args):void
+		{
+			var module:INetworkModule = ModuleDock.getInstance().takeModule(ModuleDock.NETWORK_MODULE_NAME) as INetworkModule;
+			for each (var pClass:Class in args) {
+				module.addPackageParser(pClass);
 			}
 		}
 		
