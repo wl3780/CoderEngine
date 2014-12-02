@@ -11,6 +11,7 @@ package test.modules.network.proxys
 	
 	import test.modules.network.NetworkModule;
 	import test.modules.network.orders.NetworkInternalOrder;
+	import test.modules.network.orders.NetworkServiceOrder;
 	import test.modules.network.others.SocketEvent;
 	
 	public class SocketProxy extends SubProxy
@@ -40,10 +41,16 @@ package test.modules.network.proxys
 				case NetworkInternalOrder.DISCONNECT:
 					_conn.disconnect();
 					break;
-				case MessageConst.SEND_TO_SOCKET:
+				case MessageConst.SEND_TO_SOCKET:	// 发送请求
 					var tos:Socket_tos = message.proto as Socket_tos;
 					_conn.sendMessage(tos.pack_id, tos.encode());
 					tos.clear();
+					break;
+				case NetworkServiceOrder.ORDER_HEARTBEAT:	// 收到心跳包
+					this.sendToTotalModule(NetworkInternalOrder.SERVICE_HEARTBEAT, null);
+					break;
+				case NetworkServiceOrder.ORDER_CROSSDAY:	//　收到跨天提示
+					this.sendToTotalModule(NetworkInternalOrder.SERVICE_CROSSDAY, null);
 					break;
 			}
 		}
