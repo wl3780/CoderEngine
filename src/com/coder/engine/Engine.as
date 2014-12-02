@@ -5,6 +5,8 @@
 	import com.coder.core.controls.elisor.HeartbeatFactory;
 	import com.coder.core.displays.avatar.Avatar;
 	import com.coder.core.displays.world.Scene;
+	import com.coder.global.EngineGlobal;
+	import com.coder.utils.GameTimer;
 	import com.coder.utils.geom.SuperKey;
 	import com.coder.utils.log.Log;
 	
@@ -15,7 +17,6 @@
 	import flash.geom.Rectangle;
 	import flash.system.System;
 	import flash.utils.getTimer;
-	import com.coder.global.EngineGlobal;
 
 	public class Engine
 	{
@@ -26,6 +27,7 @@
 		public static var recordAvatarChar:Avatar = new Avatar();
 		
 		public static var isRecord:Boolean = false;
+		public static var frameRate:uint;
 		
 		private static var _instance_:Engine;
 		private static var _stage_:Stage;
@@ -142,17 +144,21 @@
 
 		public function setup(target:DisplayObjectContainer, moduleConstClass:Class, assetsPath:String, networkModule:Class=null, trackFunc:Function=null):void
 		{
+			frameRate = target.stage.frameRate;
+			
 			Asswc.setup(target);
 			Asswc.track = trackFunc;
 			
 			Engine.stage = target.stage;
 			Elisor.getInstance().setup(stage);
 			EngineGlobal.ELEMENTS_HOST_PATH = assetsPath;
-			SuperKey.getInstance().setUp(stage);
+			SuperKey.getInstance().setup(stage);
+			HeartbeatFactory.getInstance().setup(stage);
+			GameTimer.getInstance().setup(stage);
 			if (moduleConstClass && networkModule) {
 				ModuleDock.setup(moduleConstClass, networkModule);
 			}
-			HeartbeatFactory.getInstance().setup(stage);
+			
 			Log.debug(this, "系统模块初始化完毕！");
 			recordAvatar.unit.isCharMode = true;
 		}

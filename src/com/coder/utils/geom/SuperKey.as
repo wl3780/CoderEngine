@@ -33,7 +33,7 @@
 			return _instance ||= new SuperKey();
 		}
 
-		public function setUp(stage:Stage):void
+		public function setup(stage:Stage):void
 		{
 			this.stage = stage;
 			this.stage.addEventListener(KeyboardEvent.KEY_DOWN, keydownFunc);
