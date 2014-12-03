@@ -6,10 +6,6 @@ package test.modules
 
 	public class ModuleConst
 	{
-		public function ModuleConst()
-		{
-		}
-		
 		public static const SCENE_MODULE:String = getQualifiedClassName(SceneModule);
 	}
 }

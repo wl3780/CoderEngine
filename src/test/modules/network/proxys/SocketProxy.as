@@ -5,6 +5,7 @@ package test.modules.network.proxys
 	import com.coder.core.socket.Socket_toc;
 	import com.coder.core.socket.Socket_tos;
 	import com.coder.interfaces.dock.IMessage;
+	import com.coder.utils.GameTimer;
 	
 	import flash.utils.ByteArray;
 	import flash.utils.Timer;
@@ -13,6 +14,7 @@ package test.modules.network.proxys
 	import test.modules.network.orders.NetworkInternalOrder;
 	import test.modules.network.orders.NetworkServiceOrder;
 	import test.modules.network.others.SocketEvent;
+	import test.protos.network.toc.Network_1001_Heartbeat_toc;
 	
 	public class SocketProxy extends SubProxy
 	{
@@ -47,6 +49,8 @@ package test.modules.network.proxys
 					tos.clear();
 					break;
 				case NetworkServiceOrder.ORDER_HEARTBEAT:	// 收到心跳包
+					var heartData:Network_1001_Heartbeat_toc = message.proto as Network_1001_Heartbeat_toc;
+					GameTimer.getInstance().sysTime = heartData.sysTime;
 					this.sendToTotalModule(NetworkInternalOrder.SERVICE_HEARTBEAT, null);
 					break;
 				case NetworkServiceOrder.ORDER_CROSSDAY:	//　收到跨天提示
