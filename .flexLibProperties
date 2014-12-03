@@ -2,6 +2,10 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="test.modules.network.orders.NetworkServiceOrder"/>
+    <classEntry path="test.protos.network.toc.Network_1001_Heartbeat_toc"/>
+    <classEntry path="test.protos.network.toc.Network_1002_Crossday_toc"/>
+    <classEntry path="test.protos.scene.toc.Scene_1001_Enter_toc"/>
+    <classEntry path="test.protos.scene.tos.Scene_1001_Enter_tos"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
