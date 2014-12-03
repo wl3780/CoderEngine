@@ -11,6 +11,8 @@ package test.modules.network
 	import flash.utils.getQualifiedClassName;
 	
 	import test.modules.network.proxys.SocketProxy;
+	import test.protos.network.toc.Network_1001_Heartbeat_toc;
+	import test.protos.network.toc.Network_1002_Crossday_toc;
 	
 	public class NetworkModule extends Module implements INetworkModule
 	{
@@ -35,6 +37,8 @@ package test.modules.network
 				);
 			this.registerSubPackage
 				(
+					Network_1001_Heartbeat_toc,
+					Network_1002_Crossday_toc
 				);
 		}
 		
