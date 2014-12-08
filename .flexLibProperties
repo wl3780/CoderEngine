@@ -7,6 +7,7 @@
     <classEntry path="test.protos.network.tos.Network_1001_Heartbeat_tos"/>
     <classEntry path="test.protos.scene.toc.Scene_1001_Enter_toc"/>
     <classEntry path="test.protos.scene.tos.Scene_1001_Enter_tos"/>
+    <classEntry path="test.modules.worker.WorkerModule"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
