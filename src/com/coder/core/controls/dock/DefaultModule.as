@@ -3,11 +3,11 @@
 	/**
 	 * 空模块
 	 */	
-    public final class DefaultModule extends Module
+	public final class DefaultModule extends Module
 	{
 		public function DefaultModule()
 		{
 			super();
 		}
-    }
+	}
 }

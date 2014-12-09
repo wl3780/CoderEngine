@@ -21,6 +21,10 @@ package com.coder.core.protos
 			_id_ = Asswc.getSoleId();
 		}
 		
+		/**
+		 * 唯一id，通常是自读的（特殊情况下可以修改）
+		 * @return 
+		 */		
 		public function get id():String
 		{
 			return _id_;

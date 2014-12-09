@@ -30,9 +30,7 @@
 		
 		public function send(message:IMessage):void
 		{
-			if ( message.checkFormat() ) {
-				MessageDock.getInstance().send(message);
-			}
+			MessageDock.getInstance().send(message);
 		}
 		
 		public function subHandle(message:IMessage):void
@@ -59,8 +57,10 @@
 						throw new Error("参数" + sub + "不是SubProxy子对象");
 					}
 				}
-				proxy.oid = this.id;
-				ModuleDock.getInstance().addModuleSub(proxy);
+				if (proxy.checkFromat()) {
+					proxy.oid = this.name;
+					ModuleDock.getInstance().addModuleSub(proxy);
+				}
 			}
 		}
 		

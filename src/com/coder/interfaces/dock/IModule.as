@@ -16,6 +16,10 @@ package com.coder.interfaces.dock
 
 		function subHandle(message:IMessage):void;
 
-		function registerSubProxy(...args):void;
+		function registerSubProxy(... args):void;
+		
+		function registerSubPackage(... args):void;
+		
+		function registerPackParser(... args):void;
 	}
 }

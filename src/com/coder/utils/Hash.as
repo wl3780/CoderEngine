@@ -40,7 +40,7 @@
             }
 			
             if (!isContain) {
-                _length = _length + 1;
+                _length ++;
             }
         }
 		
@@ -62,7 +62,7 @@
 		
         public function get length():int
 		{
-            return (_length);
+            return _length;
         }
 		
         public function get id():String
@@ -118,20 +118,15 @@
             _id = Asswc.getSoleId();
         }
 		
-        public function toString():String
-		{
-            return super.toString();
-        }
-		
         public function get className():String
 		{
             return _className;
         }
 		
-        internal function gc():Boolean
+		public function toString():String
 		{
-            return false;
-        }
+			return super.toString();
+		}
 
     }
 }
