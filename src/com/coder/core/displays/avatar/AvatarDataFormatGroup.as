@@ -11,7 +11,6 @@
 		private static var _recoverIndex_:int = 50;
 
 		public var isCreateWarn:Boolean = true;
-		private var actionGroup:Hash;
 		public var owner:String;
 		public var type:String;
 		public var isLoaded:Boolean;
@@ -21,6 +20,8 @@
 		public var idName:String;
 		public var wealth_path:String;
 		public var wealth_id:String;
+		
+		private var actionGroup:Hash;
 
 		public function AvatarDataFormatGroup()
 		{
@@ -88,9 +89,22 @@
 			}
 		}
 		
+		public function recover():void
+		{
+			if (isDisposed) {
+				return;
+			}
+			this.dispose();
+			if (_recoverQueue_.length < _recoverIndex_) {
+				_recoverQueue_.push(this);
+			}
+		}
+		
 		override public function dispose():void
 		{
+			AvatarDataFormatGroup._instanceHash_.remove(this.id);
 			super.dispose();
+			isDisposed = true;
 		}
 
 	}

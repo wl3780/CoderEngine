@@ -75,7 +75,7 @@
 		public function getActReady(act:String, dir:int):Boolean
 		{
 			var key:String = act + Asswc.LINE + dir;
-			return actState[key]==null ? false : actState[key];
+			return actState[key] == null ? false : actState[key];
 		}
 		
 		public function setActReady(act:String, dir:int, value:Boolean):void
@@ -114,18 +114,12 @@
 			return result;
 		}
 		
-		public function reset():void
-		{
-			isDisposed = false;
-		}
-		
 		public function recover():void
 		{
 			if (isDisposed) {
 				return;
 			}
 			this.dispose();
-			reset();
 			if (_recoverQueue_.length <= _recoverIndex_) {
 				_recoverQueue_.push(this);
 			}
@@ -135,6 +129,7 @@
 		{
 			AvatarDataFormat._instanceHash_.remove(this.id);
 			super.dispose();
+			isDisposed = true;
 		}
 		
 		public function getLink(dir:int, frame:int):String

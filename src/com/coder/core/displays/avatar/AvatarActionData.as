@@ -34,13 +34,13 @@
 		public var playEndAndStopFrame:int = -1;
 		
 		protected var _path_:String;
-		protected var _isDisposed_:Boolean = false;
 		protected var _type_:String;
 		protected var _idName_:String;
 		protected var _isReady_:Boolean;
 		protected var _overTime_:uint;
 		protected var _totalFrames_:uint;
 		protected var _offsetSpeed_:uint;
+		protected var _isDisposed_:Boolean = false;
 		
 		protected var _stopFrame_:int = -1;
 		protected var _currFrame_:uint;
