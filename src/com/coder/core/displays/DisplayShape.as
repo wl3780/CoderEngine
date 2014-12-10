@@ -17,12 +17,12 @@
 		private static var _elisor_:Elisor = Elisor.getInstance();
 		private static var _className_:String;
 
-		protected var _isDisposed_:Boolean;
 		protected var _id_:String;
 		protected var _oid_:String;
 		protected var _proto_:Object;
 		protected var _type_:String;
 		protected var _enabled_:Boolean;
+		protected var _isDisposed_:Boolean;
 
 		public function DisplayShape()
 		{
@@ -41,7 +41,7 @@
 		
 		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void
 		{
-			super.removeEventListener(type, listener);
+			super.removeEventListener(type, listener, useCapture);
 			_elisor_.removeEventOrder(this.id, type);
 		}
 		

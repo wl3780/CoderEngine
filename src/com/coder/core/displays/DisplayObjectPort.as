@@ -20,13 +20,13 @@
 			if (hash.has(className) == false) {
 				return false;
 			}
-			return (hash.take(className) as Hash).has(id);
+			return (hash[className] as Hash).has(id);
 		}
 		
 		public static function removeTargetByClassName(className:String, id:String):IOrderDispatcher
 		{
 			if ( hash.has(className) ) {
-				return (hash.take(className) as Hash).remove(id) as IOrderDispatcher;
+				return (hash[className] as Hash).remove(id) as IOrderDispatcher;
 			}
 			return null;
 		}
@@ -34,7 +34,7 @@
 		public static function takeTargetByClassName(className:String, id:String):IOrderDispatcher
 		{
 			if ( hash.has(className) ) {
-				return (hash.take(className) as Hash).take(id) as IOrderDispatcher;
+				return (hash[className] as Hash).take(id) as IOrderDispatcher;
 			}
 			return null;
 		}
