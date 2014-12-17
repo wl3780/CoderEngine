@@ -50,7 +50,7 @@
 		
 		public static function get instance_key():int
 		{
-			instance_index = instance_index - 1;
+			instance_index --;
 			if (instance_index < 0) {
 				instance_index = 2147483647;
 			}

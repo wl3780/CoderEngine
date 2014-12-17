@@ -6,7 +6,9 @@
 	{
 
 		function get id():String;
+		
 		function get rect():Rectangle;
+		
 		function reFree():void;
 
 	}
