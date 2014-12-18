@@ -106,7 +106,7 @@
 			}
 			return point;
 		}
-		public static function putPoint(value:Rectangle):void
+		public static function putPoint(value:Point):void
 		{
 			value.x = 0;
 			value.y = 0;
@@ -130,9 +130,8 @@
 			value.y = 0;
 			value.name = "";
 			
-			value.mouseEnabled = false;
-			value.mouseChildren = false;
-			value.tabChildren = false;
+			value.mouseEnabled = value.mouseChildren = false;
+			value.tabChildren = value.tabEnabled = false;
 			if (value.alpha != 1) {
 				value.alpha = 1;
 			}

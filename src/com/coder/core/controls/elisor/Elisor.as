@@ -65,11 +65,6 @@
 			FrameElisor.getInstance().removeFrameOrder(heartBeatHandler);
 		}
 		
-		public function isFrameOrder(heartBeatHandler:Function):Boolean
-		{
-			return false;
-		}
-		
 		public function stopFrameOrder(heartBeatHandler:Function):void
 		{
 			FrameElisor.getInstance().stopFrameOrder(heartBeatHandler);

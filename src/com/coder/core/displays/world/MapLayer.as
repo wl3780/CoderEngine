@@ -28,6 +28,7 @@
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.system.ImageDecodingPolicy;
 	import flash.system.LoaderContext;
@@ -86,7 +87,7 @@
 		public function MapLayer()
 		{
 			mapdataHash = new Hash();
-			tar_rect = new Rectangle(0, 0, 320, 180);
+			tar_rect = new Rectangle(0, 0, EngineGlobal.IMAGE_WIDTH, EngineGlobal.IMAGE_HEIGHT);
 			stage_rect = new Rectangle();
 			tar_point = new Point();
 			stage_point = new Point();
@@ -130,7 +131,7 @@
 		
 		public function changeScene(to_scene:String):void
 		{
-			var tmp_id:* = this.scene_id;
+			var tmp_id:String = this.scene_id;
 			this.scene_id = to_scene;
 			_limitIndex_ = 15;
 			if (to_scene != tmp_id) {
@@ -175,30 +176,29 @@
 		}
 		
 		private function setupProLoader():void{
-			var _local4:int;
-			var _local1 = null;
-			var _local3 = null;
 			imageKeyQueue = [];
-			if (((ImageLoadQueue) && (ImageLoadQueue.length))) {
-				_local4 = 0;
-				while (_local4 < ImageLoadQueue.length) {
-					_local1 = ((((((((EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_") + scene_id) + "/") + ImageLoadQueue[_local4][0]) + Asswc.LINE) + ImageLoadQueue[_local4][1]) + ".jpg?ver=") + EngineGlobal.version);
-					if (((!(requestHash.has(_local1))) && (EImageLoadQueue[("imageQueue_" + scene_id)]))) {
-						_local3 = ((ImageLoadQueue[_local4][0] + Asswc.LINE) + ImageLoadQueue[_local4][1]);
+			if (ImageLoadQueue && ImageLoadQueue.length) {
+				var path:String = null;
+				var tileKey:String = null;
+				var index:int = 0;
+				while (index < ImageLoadQueue.length) {
+					path = EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_" + scene_id + "/" + ImageLoadQueue[index][0] + Asswc.LINE + ImageLoadQueue[index][1] + ".jpg?ver=" + EngineGlobal.version;
+					if (!requestHash.has(path) && EImageLoadQueue["imageQueue_" + scene_id]) {
+						tileKey = ImageLoadQueue[index][0] + Asswc.LINE + ImageLoadQueue[index][1];
 						imageKeyQueue.push({
 							scene_id:scene_id,
-							key:_local3,
+							key:tileKey,
 							dis:0,
-							index_x:ImageLoadQueue[_local4][0],
-							index_y:ImageLoadQueue[_local4][1]
+							index_x:ImageLoadQueue[index][0],
+							index_y:ImageLoadQueue[index][1]
 						});
 					}
-					_local4++;
+					index++;
 				}
 			} else {
-				for each (var _local2:Object in mapdata.imageIndexHash) {
+				for each (var item:Object in mapdata.imageIndexHash) {
 					if (imageKeyQueue.length < 500) {
-						imageKeyQueue.push(_local2);
+						imageKeyQueue.push(item);
 					}
 				}
 			}
@@ -210,46 +210,46 @@
 		
 		private function setupScene():void
 		{
-			var _local1 = null;
-			var _local2 = null;
-			var _local3:String = ((((EngineGlobal.SCENE_IMAGE_DIR + "map_mini/scene_") + scene_id) + ".jpg?ver=") + EngineGlobal.version);
-			if (WealthStoragePort.takeWealth(_local3) != null) {
-				_local1 = (WealthStoragePort.takeWealth(_local3) as DisplayLoader);
-				_local1.contentLoaderInfo.bytes;
-				miniMapLoadedFunc(null, _local1);
+			var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_mini/scene_" + scene_id + ".jpg?ver=" + EngineGlobal.version;
+			if (WealthStoragePort.takeLoaderByWealth(path) != null) {
+				var mapLoader:DisplayLoader = WealthStoragePort.takeLoaderByWealth(path) as DisplayLoader;
+				mapLoader.contentLoaderInfo.bytes;
+				miniMapLoadedFunc(null, mapLoader);
 			} else {
-				loaderContext.imageDecodingPolicy = "onLoad";
+				loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
 				if (protoLoader) {
 					protoLoader.removeEventListener(Event.COMPLETE, miniJPGLoadFunc);
 					protoLoader.removeEventListener(IOErrorEvent.IO_ERROR, errorFunc);
 				}
-				if (!loadMiniJPGBytesHash.has(_local3)) {
+				if (!loadMiniJPGBytesHash.has(path)) {
 					protoLoader = new ProtoURLLoader();
-					protoLoader.name = _local3;
+					protoLoader.name = path;
 					protoLoader.dataFormat = "binary";
 					protoLoader.addEventListener(Event.COMPLETE, miniJPGLoadFunc);
 					protoLoader.addEventListener(IOErrorEvent.IO_ERROR, errorFunc);
-					protoLoader.load(new URLRequest(_local3));
+					protoLoader.load(new URLRequest(path));
 				} else {
-					_local2 = (loadMiniJPGBytesHash.take(_local3) as ProtoURLLoader);
-					loadMiniJPG(_local2.data, _local3);
+					var proLoader:ProtoURLLoader = loadMiniJPGBytesHash.take(path) as ProtoURLLoader;
+					loadMiniJPG(proLoader.data, path);
 				}
 			}
 		}
-		private function loadMapData(scene_id:String):void{
+		
+		private function loadMapData(scene_id:String):void
+		{
 			this.isReady = false;
-			var _local3:String = ((((EngineGlobal.SCENE_IMAGE_DIR + "map_data/scene_") + scene_id) + ".data?ver=") + EngineGlobal.version);
-			var _local2:BingLoader = (WealthStoragePort.takeWealth(_local3) as BingLoader);
-			if (((mapdataHash.has(_local3)) || (_local2))) {
-				if (_local2) {
-					analyzeMapData((_local2.data as ByteArray));
+			var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_data/scene_" + scene_id + ".data?ver=" + EngineGlobal.version;
+			var bLoader:BingLoader = WealthStoragePort.takeLoaderByWealth(path) as BingLoader;
+			if (mapdataHash.has(path) || bLoader) {
+				if (bLoader) {
+					analyzeMapData(bLoader.data as ByteArray);
 				} else {
-					analyzeMapData((mapdataHash.take(_local3).data as ByteArray));
+					analyzeMapData(mapdataHash.take(path).data as ByteArray);
 				}
 				setupProLoader();
 				setupScene();
 				Scene.scene.setupReady();
-				isReady = true;
+				this.isReady = true;
 				loadHash.reset();
 				stageIntersects(true);
 			} else {
@@ -262,25 +262,26 @@
 					}
 				}
 				mapdataLoader = new ProtoURLLoader();
-				mapdataLoader.name = _local3;
-				mapdataLoader.dataFormat = "binary";
-				mapdataLoader.load(new URLRequest(_local3));
+				mapdataLoader.name = path;
+				mapdataLoader.dataFormat = URLLoaderDataFormat.BINARY;
+				mapdataLoader.load(new URLRequest(path));
 				mapdataLoader.addEventListener(Event.COMPLETE, onMapDataComplete);
 				mapdataLoader.addEventListener(IOErrorEvent.IO_ERROR, onMapDataError);
 			}
 		}
-		protected function onMapDataComplete(event:Event):void{
+		
+		protected function onMapDataComplete(event:Event):void
+		{
 			setupScene();
-			var _local2:ProtoURLLoader = (event.target as ProtoURLLoader);
-			mapdataHash.put(_local2.name, _local2);
-			analyzeMapData(_local2.data);
+			var pLoader:ProtoURLLoader = event.target as ProtoURLLoader;
+			mapdataHash.put(pLoader.name, pLoader);
+			analyzeMapData(pLoader.data);
 			Scene.scene.setupReady();
 			AvatarRequestElisor.stop = false;
 		}
-		private function analyzeMapData(bytes:ByteArray):void{
-			var _local5:Number;
-			var _local4:Number;
-			var _local2 = null;
+		
+		private function analyzeMapData(bytes:ByteArray):void
+		{
 			if (mapdataLoader) {
 				mapdataLoader.removeEventListener(Event.COMPLETE, onMapDataComplete);
 				mapdataLoader.removeEventListener(IOErrorEvent.IO_ERROR, onMapDataError);
@@ -289,120 +290,131 @@
 			mapdata.scene_id = scene_id;
 			mapdata.uncode(bytes);
 			mapdata.map_id = scene_id as int;
-			var _local3:String = ((((EngineGlobal.SCENE_IMAGE_DIR + "map_mini/scene_") + scene_id) + ".jpg?ver=") + EngineGlobal.version);
-			if (((!((WealthStoragePort.takeWealth(_local3) == null))) || ((loadMiniJPGBytesHash.take(_local3) as ProtoURLLoader)))) {
+			var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_mini/scene_" + scene_id + ".jpg?ver=" + EngineGlobal.version;
+			if (WealthStoragePort.takeLoaderByWealth(path) != null || loadMiniJPGBytesHash.take(path) as ProtoURLLoader) {
 				if (bg_bmd) {
-					_local5 = (mapdata.pixel_width / bg_bmd.width);
-					_local4 = (mapdata.pixel_height / bg_bmd.height);
+					var sx:Number = mapdata.pixel_width / bg_bmd.width;
+					var sy:Number = mapdata.pixel_height / bg_bmd.height;
+					var m:Matrix = new Matrix();
+					m.scale(sx, sy);
 					this.graphics.clear();
-					_local2 = new Matrix();
-					_local2.scale(_local5, _local4);
-					this.graphics.beginBitmapFill(bg_bmd, _local2, false);
+					this.graphics.beginBitmapFill(bg_bmd, m, false);
 					this.graphics.drawRect(0, 0, mapdata.pixel_width, mapdata.pixel_height);
 				}
 				loadHash.reset();
 				stageIntersects(true);
 			}
 		}
-		protected function errorFunc(event:IOErrorEvent):void{
+		
+		protected function errorFunc(event:IOErrorEvent):void
+		{
 			Log.error(this, ("小地图加载失败：" + scene_id));
 			setupScene();
 		}
-		protected function onMapDataError(event:IOErrorEvent):void{
+		
+		protected function onMapDataError(event:IOErrorEvent):void
+		{
 			Log.error(this, ("地图数据加载失败：" + event.target.name));
 			mapdataHash.remove(event.target.name);
 			loadMapData(scene_id);
 		}
-		private function miniMapLoadedFunc(e:Event=null, loaderx:Loader=null):void{
-			e = e;
-			loaderx = loaderx;
+		
+		private function miniMapLoadedFunc(evt:Event=null, loaderx:Loader=null):void
+		{
 			this.graphics.clear();
 			if (bg_bmd) {
 				bg_bmd.dispose();
 			}
 			if (loaderx) {
-				bg_bmd = BitmapData(Bitmap(loaderx.content).bitmapData).clone();
+				bg_bmd = (loaderx.content as Bitmap).bitmapData.clone();
 			} else {
-				bg_bmd = BitmapData(e.target.loader.content.bitmapData).clone();
+				bg_bmd = (evt.target.loader.content as Bitmap).bitmapData.clone();
 			}
 			Scene.scene.miniBitmapReady(bg_bmd);
-			var bmd:* = new BitmapData(bg_bmd.width, bg_bmd.height, true, 0);
+			var bmd:BitmapData = new BitmapData(bg_bmd.width, bg_bmd.height, true, 0);
 			bmd.applyFilter(bg_bmd, bg_bmd.rect, new Point(), new BlurFilter(10, 10, 1));
 			bg_bmd = bmd;
-			var pixel_width:* = 6000;
-			var pixel_height:* = 6000;
+			
+			var pixel_width:int = 6000;
+			var pixel_height:int = 6000;
 			if (mapdata) {
 				pixel_width = mapdata.pixel_width;
 				pixel_height = mapdata.pixel_height;
-				var imageNum:* = ((pixel_width / 320) * (pixel_height / 180));
-				var size:* = (loaderQueue.length - (imageNum * 0.7));
+				var imageNum:* = (pixel_width / EngineGlobal.IMAGE_WIDTH) * (pixel_height / EngineGlobal.IMAGE_HEIGHT);
+				var size:* = loaderQueue.length - (imageNum * 0.7);
 				if (size > 0) {
-					loaderQueue.splice(((loaderQueue.length - size) + 1), size);
+					loaderQueue.splice((loaderQueue.length - size + 1), size);
 				} else {
 					if (size < 0) {
 						var n:* = Math.abs(size);
 						while (n) {
 							loaderQueue.push(new Loader());
-							n = (n - 1);
+							n --;
 						}
 					}
 				}
 			}
+			
 			if (loader) {
 				this.loader.unloadAndStop();
-				setTimeout(function (_arg1):void{
-					_arg1.contentLoaderInfo.removeEventListener(Event.COMPLETE, miniMapLoadedFunc);
-					_arg1.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, errorFunc);
-					_arg1.contentLoaderInfo.removeEventListener(Event.UNLOAD, unloadedFunc);
+				setTimeout(function (tmpLoader:Loader):void{
+					tmpLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, miniMapLoadedFunc);
+					tmpLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, errorFunc);
+					tmpLoader.contentLoaderInfo.removeEventListener(Event.UNLOAD, unloadedFunc);
 				}, 500, loader);
 			}
 			this.loader = null;
 			if (bg_bmd) {
-				var sw:* = (pixel_width / bg_bmd.width);
-				var sh:* = (pixel_height / bg_bmd.height);
-				this.graphics.clear();
-				var mat:* = new Matrix();
+				var sw:Number = pixel_width / bg_bmd.width;
+				var sh:Number = pixel_height / bg_bmd.height;
+				var mat:Matrix = new Matrix();
 				mat.scale(sw, sh);
+				this.graphics.clear();
 				this.graphics.beginBitmapFill(bg_bmd, mat, false);
 				this.graphics.drawRect(0, 0, pixel_width, pixel_height);
 			}
 			loadHash.reset();
 			stageIntersects(true);
 		}
-		protected function timerFunc(event):void{
+		
+		protected function timerFunc(event):void
+		{
 			loop();
 		}
-		public function loop():void{
-			var _local1 = null;
+		
+		public function loop():void
+		{
 			if (clearing) {
 				return;
 			}
 			if (Engine.stage) {
-				_local1 = new Point();
-				_local1 = this.globalToLocal(_local1);
-				this.stage_rect.x = _local1.x;
-				this.stage_rect.y = _local1.y;
+				var p:Point = new Point();
+				p = this.globalToLocal(p);
+				this.stage_rect.x = p.x;
+				this.stage_rect.y = p.y;
 				this.stage_rect.width = Engine.stage.stageWidth;
 				this.stage_rect.height = Engine.stage.stageHeight;
 			}
-			var _local2:int;
+			var dur:int;
 			loadImage();
-			if ((getTimer() - loadImageTime) > _local2) {
+			if ((getTimer() - loadImageTime) > dur) {
 				loadImageTime = getTimer();
 				loopLoad();
 			}
 			stageIntersects();
 		}
-		private function getNear():Object{
+		
+		private function getNear():Object
+		{
 			var _local5 = null;
 			var _local8:int;
 			var _local2:int;
 			var _local7:int;
-			stage_point.x = (Engine.stage.stageWidth / 2);
-			stage_point.y = (Engine.stage.stageHeight / 2);
+			stage_point.x = Engine.stage.stageWidth / 2;
+			stage_point.y = Engine.stage.stageHeight / 2;
 			stage_point = this.globalToLocal(stage_point);
-			var _local4:int = (stage_point.x / 320);
-			var _local6:int = (stage_point.y / 180);
+			var _local4:int = stage_point.x / EngineGlobal.IMAGE_WIDTH;
+			var _local6:int = stage_point.y / EngineGlobal.IMAGE_HEIGHT;
 			var _local1:Point = new Point();
 			var _local3:Point = new Point(_local4, _local6);
 			_local7 = 0;
@@ -453,10 +465,10 @@
 					_local6 = _local4.tar.scene_id;
 					_local3 = _local7.split(Asswc.LINE);
 					_local5 = new Rectangle();
-					_local5.x = ((_local3[0] * 320) - 150);
-					_local5.y = ((_local3[1] * 180) - 50);
-					_local5.width = (320 + 300);
-					_local5.height = (180 + 100);
+					_local5.x = ((_local3[0] * EngineGlobal.IMAGE_WIDTH) - 150);
+					_local5.y = ((_local3[1] * EngineGlobal.IMAGE_HEIGHT) - 50);
+					_local5.width = (EngineGlobal.IMAGE_WIDTH + 300);
+					_local5.height = (EngineGlobal.IMAGE_HEIGHT + 100);
 					_local2 = stage_rect.intersects(_local5);
 					_local2 = Scene.scene.mainChar.isRuning;
 					if (((stage_rect.intersects(_local5)) || ((((((_limitIndex_ > 0)) || ((Scene.scene.mainChar.isRuning == false)))) && (_local9))))) {
@@ -476,10 +488,10 @@
 			}
 			var _local3:Point = this.globalToLocal(new Point());
 			var _local2:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
-			var _local7:int = (_local3.x / 320);
-			var _local6:int = (_local3.y / 180);
-			var _local4:int = (_local2.x / 320);
-			var _local1:int = (_local2.y / 180);
+			var _local7:int = (_local3.x / EngineGlobal.IMAGE_WIDTH);
+			var _local6:int = (_local3.y / EngineGlobal.IMAGE_HEIGHT);
+			var _local4:int = (_local2.x / EngineGlobal.IMAGE_WIDTH);
+			var _local1:int = (_local2.y / EngineGlobal.IMAGE_HEIGHT);
 			var _local9:int = Math.min(_local7, _local4);
 			var _local10:int = Math.max(_local7, _local4);
 			var _local5:int = Math.min(_local6, _local1);
@@ -505,8 +517,8 @@
 			if (requestHash.has(_local4)) {
 				return;
 			}
-			tar_rect.x = (index_x * 320);
-			tar_rect.y = (index_y * 180);
+			tar_rect.x = (index_x * EngineGlobal.IMAGE_WIDTH);
+			tar_rect.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
 			if (stage_rect.intersects(tar_rect)) {
 				_local5 = ((index_x + "_") + index_y);
 				_local3 = false;
@@ -545,8 +557,8 @@
 				}
 				requestHash.put(_local4, _local3);
 				_local3.name = _local4;
-				_local3.x = (index_x * 320);
-				_local3.y = (index_y * 180);
+				_local3.x = (index_x * EngineGlobal.IMAGE_WIDTH);
+				_local3.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
 				_local3.load(new URLRequest(_local4), loaderContext);
 				_local3.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadedFunc);
 				_local3.contentLoaderInfo.addEventListener(Event.UNLOAD, onUnloadFunc);
@@ -593,10 +605,10 @@
 			}
 			var _local9:Point = this.globalToLocal(new Point());
 			var _local8:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
-			var _local12:int = (_local9.x / 320);
-			var _local10:int = (_local9.y / 180);
-			var _local3:int = (_local8.x / 320);
-			var _local2:int = (_local8.y / 180);
+			var _local12:int = (_local9.x / EngineGlobal.IMAGE_WIDTH);
+			var _local10:int = (_local9.y / EngineGlobal.IMAGE_HEIGHT);
+			var _local3:int = (_local8.x / EngineGlobal.IMAGE_WIDTH);
+			var _local2:int = (_local8.y / EngineGlobal.IMAGE_HEIGHT);
 			var _local5:int = Math.min(_local12, _local3);
 			var _local6:int = Math.max(_local12, _local3);
 			var _local4:int = Math.min(_local10, _local2);
@@ -615,8 +627,8 @@
 			var _local5 = null;
 			var _local4 = null;
 			var _local3 = null;
-			tar_rect.x = (index_x * 320);
-			tar_rect.y = (index_y * 180);
+			tar_rect.x = (index_x * EngineGlobal.IMAGE_WIDTH);
+			tar_rect.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
 			if (stage_rect.intersects(tar_rect)) {
 				_local5 = ((((((((EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_") + scene_id) + "/") + index_x) + Asswc.LINE) + index_y) + ".jpg?ver=") + EngineGlobal.version);
 				if (loadHash.has(_local5) == false) {
@@ -676,8 +688,8 @@
 			loadHash.reset();
 			loadImageTime = 0;
 			imageKeyQueue = [];
-			stageIndexW = Math.ceil((Engine.stage.stageWidth / 320));
-			stageIndexH = Math.ceil((Engine.stage.stageHeight / 180));
+			stageIndexW = Math.ceil(Engine.stage.stageWidth / EngineGlobal.IMAGE_WIDTH);
+			stageIndexH = Math.ceil(Engine.stage.stageHeight / EngineGlobal.IMAGE_HEIGHT);
 			_limitIndex_ = (stageIndexW * stageIndexH);
 			_limitIndex_ = _limitIndex_ > 15 ? 15 : _limitIndex_;
 			_limitIndex_ = _limitIndex_ < _general_limitIndex_ ? _general_limitIndex_ : _limitIndex_;

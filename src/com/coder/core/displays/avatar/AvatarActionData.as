@@ -60,7 +60,7 @@
 		public static function checkNeedLoad(reflex:String, type:String, idName:String, act:String, dir:int):Boolean
 		{
 			var url:String = EngineGlobal.AVATAR_ASSETS_DIR + reflex + "/" + idName + Asswc.LINE + act + Asswc.LINE + dir + ".tmp";
-			var loader:DisplayLoader = WealthStoragePort.takeWealth(url) as DisplayLoader;
+			var loader:DisplayLoader = WealthStoragePort.takeLoaderByWealth(url) as DisplayLoader;
 			if (!loader) {
 				return true;
 			}

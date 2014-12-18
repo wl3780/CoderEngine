@@ -29,14 +29,14 @@
 			_loaderInstanceHash_.put(path, loader_id);
 		}
 		
-		public static function takeWealth(path:String):ILoader
+		public static function takeLoaderByWealth(path:String):ILoader
 		{
 			var loader_id:String = _loaderInstanceHash_.take(path) as String;
 			var loader:ILoader = WealthElisor.loaderInstanceHash.take(loader_id) as ILoader;
 			return loader;
 		}
 		
-		public static function disposeWealth(path:String):void
+		public static function disposeLoaderByWealth(path:String):void
 		{
 			var loader_id:String = _loaderInstanceHash_.remove(path) as String;
 			var loader:ILoader = WealthElisor.loaderInstanceHash.take(loader_id) as ILoader;
@@ -74,7 +74,7 @@
 		
 		public static function getClass(path:String, symbol:String):Class
 		{
-			var loader:DisplayLoader = takeWealth(path) as DisplayLoader;
+			var loader:DisplayLoader = takeLoaderByWealth(path) as DisplayLoader;
 			if (loader) {
 				return loader.contentLoaderInfo.applicationDomain.getDefinition(symbol) as Class;
 			}

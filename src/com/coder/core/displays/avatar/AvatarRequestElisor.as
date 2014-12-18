@@ -207,7 +207,7 @@
 		protected function onWealthLoadFunc(event:WealthEvent):void
 		{
 			var path:String = event.path;
-			var loader:ILoader = WealthStoragePort.takeWealth(path);
+			var loader:ILoader = WealthStoragePort.takeLoaderByWealth(path);
 			var wealthData:WealthData = WealthData.getWealthData(event.wealth_id);
 			if (loader as BingLoader) {
 				if (wealthData.data) {
@@ -423,7 +423,7 @@
 			var idType:String = idName.split(Asswc.LINE)[0];
 			var actType:String = EngineGlobal.TYPE_REFLEX[idType];
 			var path:String = EngineGlobal.AVATAR_ASSETS_DIR + actType + "/" + idName + Asswc.LINE + act + Asswc.LINE + dir + ".tmp";
-			var loader:DisplayLoader = WealthStoragePort.takeWealth(path) as DisplayLoader;
+			var loader:DisplayLoader = WealthStoragePort.takeLoaderByWealth(path) as DisplayLoader;
 			if (loader) {
 				var avatarData:AvatarDataFormat = AvatarDataFormat.takeAvatarDataFormat(dataFormat_id);
 				avatarData.path = path;
@@ -553,7 +553,7 @@
 				if (act.indexOf("warm") != -1) {
 					path = path.replace("attack_warm", "attack");
 				}
-				loader = WealthStoragePort.takeWealth(path) as DisplayLoader;
+				loader = WealthStoragePort.takeLoaderByWealth(path) as DisplayLoader;
 				if (!loader) {
 					return;
 				}

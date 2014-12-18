@@ -156,7 +156,7 @@
 				
 				var wealthData:WealthData = WealthData.getWealthData(sign.wealth_id);
 				if (wealthData && sign.tryNum > 0) {
-					WealthStoragePort.disposeWealth(sign.path);
+					WealthStoragePort.disposeLoaderByWealth(sign.path);
 					sign.tryNum = sign.tryNum - 1;
 					sign.isPend = false;
 					loadWealth(wealthData, sign.lc);
