@@ -4,6 +4,7 @@
 	import com.coder.core.protos.Proto;
 	import com.coder.core.terrain.TileConst;
 	import com.coder.engine.Asswc;
+	import com.coder.global.EngineGlobal;
 	import com.coder.utils.Hash;
 	import com.coder.utils.log.Log;
 	
@@ -90,8 +91,8 @@
 			while (index < len) {
 				tile_x = bytes.readShort();
 				tile_y = bytes.readShort();
-				index_x = (tile_x * TileConst.TILE_WIDTH) / 320;
-				index_y = (tile_y * TileConst.TILE_HEIGHT) / 180;
+				index_x = (tile_x * TileConst.TILE_WIDTH) / EngineGlobal.IMAGE_WIDTH;
+				index_y = (tile_y * TileConst.TILE_HEIGHT) / EngineGlobal.IMAGE_HEIGHT;
 				key = index_x + Asswc.LINE + index_y;
 				imageIndexHash.put(key, {
 					scene_id:scene_id.toString(),
