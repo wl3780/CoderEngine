@@ -12,8 +12,9 @@
 
 	public class TileAstar
 	{
-		private static const COST_STRAIGHT:int = 10;
-		private static const COST_DIAGONAL:int = 14;
+		private static const COST_STRAIGHT:int = 10;	// 直线消耗值
+		private static const COST_DIAGONAL:int = 14;	// 对角线消耗值
+		
 		private static const DIR_TC:String = "tc";
 		private static const DIR_CL:String = "cl";
 		private static const DIR_CR:String = "cr";
@@ -23,6 +24,8 @@
 		private static var keyIndex:Point;
 
 		public var g:Graphics;
+		public var mode:int = 1;
+		
 		private var nonce:TileAstarData;
 		private var isFinish:Boolean;
 		private var G:int;
@@ -30,10 +33,11 @@
 		private var startPoint:Point;
 		private var _endPoint:Point;
 		private var colsePath:Dictionary;
-		private var colseArray:Array;
 		private var openPath:Dictionary;
+		private var colseArray:Array;
 		private var openArray:Array;
 		private var pathArray:Array;
+		
 		private var canTL:Boolean;
 		private var canTR:Boolean;
 		private var canBL:Boolean;
@@ -43,7 +47,6 @@
 		private var canCR:Boolean;
 		private var canBC:Boolean;
 		private var closeLength:int;
-		public var mode:int = 1;
 
 		public static function loopRect(index_x:int, index_y:int, loopNum:uint, dic:Dictionary, type:int, indexPt:Point):Point
 		{

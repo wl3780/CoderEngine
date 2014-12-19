@@ -155,8 +155,8 @@
 			}
 			
 			time = getTimer();
-			var speed:int = 1;	// unknow param name
-			var passTime:int = getTimer() - startTime;
+			var handleCount:int = 1;
+			var dur:int = getTimer() - startTime;
 			if (this.showType == 0) {
 				if (startSpeedY < 0) {
 					startSpeedY = 0;
@@ -168,34 +168,34 @@
 				}
 				startY = startY - dy;
 				this.y = startY;
-				if (passTime > 200) {
-					dy = 1.5 * speed + startSpeedY;
-					this.alpha = this.alpha - va * speed;
-					if (passTime > 2000) {
+				if (dur > 200) {
+					dy = 1.5 * handleCount + startSpeedY;
+					this.alpha = this.alpha - va * handleCount;
+					if (dur > 2000) {
 						alpha = -1;
 					}
 				} else {
-					dy = 2 * speed + startSpeedY;
+					dy = 2 * handleCount + startSpeedY;
 				}
 			} else {
 				if (this.showType == 5) {
 					if (startSpeedY < 0) {
 						startSpeedY = 0;
 					}
-					dy = speed + startSpeedY;
+					dy = handleCount + startSpeedY;
 					if (startSpeedY > 0) {
 						startSpeedY = startSpeedY - 0.1;
 					}
 					startY = startY - dy;
 					this.y = startY;
-					if (passTime > 300) {
-						dy = 2 * speed + startSpeedY;
-						this.alpha = this.alpha - va * speed * 2;
-						if (passTime > 2000) {
+					if (dur > 300) {
+						dy = 2 * handleCount + startSpeedY;
+						this.alpha = this.alpha - va * handleCount * 2;
+						if (dur > 2000) {
 							alpha = -1;
 						}
 					} else {
-						dy = 2 * speed + startSpeedY;
+						dy = 2 * handleCount + startSpeedY;
 					}
 				} else {
 					if (this.showType == 1) {
@@ -207,20 +207,20 @@
 							this.scaleY = 1;
 							this.scaleX = 1;
 						}
-						if (passTime > 300) {
-							this.alpha = this.alpha - va * speed;
-							this.y = this.y - dx * speed;
+						if (dur > 300) {
+							this.alpha = this.alpha - va * handleCount;
+							this.y = this.y - dx * handleCount;
 						}
-						if (passTime > 3000) {
+						if (dur > 3000) {
 							alpha = -1;
 						}
 					} else {
 						if (this.showType == 2) {
-							if (passTime > 200) {
-								this.alpha = this.alpha - va * speed;
-								this.y = this.y - dx * speed;
+							if (dur > 200) {
+								this.alpha = this.alpha - va * handleCount;
+								this.y = this.y - dx * handleCount;
 							}
-							if (passTime > 3000) {
+							if (dur > 3000) {
 								alpha = -1;
 							}
 						}

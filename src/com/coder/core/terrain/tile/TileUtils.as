@@ -13,7 +13,8 @@
 	{
 		public static var loop_break:Boolean;
 
-		public static function loopRect(index_x:int, index_y:int, loopNum:uint, startDepth:uint, loopFunc:Function, levelFunc:Function=null):void{
+		public static function loopRect(index_x:int, index_y:int, loopNum:uint, startDepth:uint, loopFunc:Function, levelFunc:Function=null):void
+		{
 			var loop:int;
 			var loop_height:int;
 			var px:int;
@@ -133,25 +134,25 @@
 		
 		public static function getFitPt(curr_pt:Point, tar_pt:Point, size:int=2):Point
 		{
-			var k:Number = ((tar_pt.y - curr_pt.y) / (tar_pt.x - curr_pt.x));
-			var indexX:int = (curr_pt.x - tar_pt.x);
-			var indexY:int = (curr_pt.y - tar_pt.y);
-			if ((((curr_pt.x == tar_pt.x)) && ((curr_pt.y == tar_pt.y)))) {
-				return (curr_pt);
+			var k:Number = (tar_pt.y - curr_pt.y) / (tar_pt.x - curr_pt.x);
+			var indexX:int = curr_pt.x - tar_pt.x;
+			var indexY:int = curr_pt.y - tar_pt.y;
+			if (curr_pt.x == tar_pt.x && curr_pt.y == tar_pt.y) {
+				return curr_pt;
 			}
 			if (curr_pt.x == tar_pt.x) {
-				return (((indexY)>0) ? LinearUtils.getTileByDir(curr_pt, 0, size) : LinearUtils.getTileByDir(curr_pt, 4, size));
+				return (indexY>0) ? LinearUtils.getTileByDir(curr_pt, 0, size) : LinearUtils.getTileByDir(curr_pt, 4, size);
 			}
 			if (curr_pt.y == tar_pt.y) {
-				return (((indexX)>0) ? LinearUtils.getTileByDir(curr_pt, 6, size) : LinearUtils.getTileByDir(curr_pt, 2, size));
+				return (indexX>0) ? LinearUtils.getTileByDir(curr_pt, 6, size) : LinearUtils.getTileByDir(curr_pt, 2, size);
 			}
 			if (k == 0.5) {
-				return (((indexX)>0) ? LinearUtils.getTileByDir(curr_pt, 7, size) : LinearUtils.getTileByDir(curr_pt, 3, size));
+				return (indexX>0) ? LinearUtils.getTileByDir(curr_pt, 7, size) : LinearUtils.getTileByDir(curr_pt, 3, size);
 			}
 			if (k == -0.5) {
-				return (((indexX)>0) ? LinearUtils.getTileByDir(curr_pt, 5, size) : LinearUtils.getTileByDir(curr_pt, 1, size));
+				return (indexX>0) ? LinearUtils.getTileByDir(curr_pt, 5, size) : LinearUtils.getTileByDir(curr_pt, 1, size);
 			}
-			return (get16Grids(curr_pt, tar_pt));
+			return get16Grids(curr_pt, tar_pt);
 		}
 		
 		public static function get16Grids(pt:Point, tarPt:Point):Point
@@ -211,68 +212,73 @@
 		
 		public static function getDepthLoopSun(loopNum:int=1, startDepth:uint=0):int
 		{
-			var i:int;
-			loopNum = (loopNum - 1);
+			loopNum -= 1;
 			var startIndex:int = startDepth;
-			var endIndex:int = (startDepth + loopNum);
+			var endIndex:int = startDepth + loopNum;
 			var value:int;
-			i = startIndex;
+			var i:int = startIndex;
 			while (i <= endIndex) {
-				value = (value + getDepthLoopValue(i));
+				value += getDepthLoopValue(i);
 				i++;
 			}
-			return (value);
+			return value;
 		}
 		
 		public static function getDepthLoopValue(depth:uint):int
 		{
 			if (depth == 0) {
-				return (1);
+				return 1;
 			}
-			var loop:int = (Math.pow(((depth * 2) + 1), 2) - Math.pow((((depth * 2) + 1) - 2), 2));
+			var loop:int = Math.pow(depth * 2 + 1, 2) - Math.pow(depth * 2 + 1 - 2, 2);
 			if (loop == 0) {
-				return (1);
+				return 1;
 			}
-			return (loop);
+			return loop;
 		}
 		
 		public static function pixelsToTile(x:Number, y:Number, resultValue:Point=null):Point
 		{
-			var x2:int = (x / TileConst.TILE_WIDTH);
-			var y2:int = (y / TileConst.TILE_HEIGHT);
+			var x2:int = x / TileConst.TILE_WIDTH;
+			var y2:int = y / TileConst.TILE_HEIGHT;
 			if (resultValue) {
 				resultValue.x = x2;
 				resultValue.y = y2;
-				return (resultValue);
-			}
-			return (new Point(x2, y2));
-		}
-		
-		public static function pixelsAlginTile(x:Number, y:Number, resultValue:Point=null):Point
-		{
-			var x2:int = (((x / TileConst.TILE_WIDTH) * TileConst.TILE_WIDTH) + TileConst.WH);
-			var y2:int = (((y / TileConst.TILE_HEIGHT) * TileConst.TILE_HEIGHT) + TileConst.HH);
-			if (resultValue) {
-				resultValue.x = x2;
-				resultValue.y = y2;
-				return (resultValue);
+				return resultValue;
 			}
 			var result:Point = Engine.getPoint();
 			result.x = x2;
 			result.y = y2;
-			return (result);
+			return result;
+		}
+		
+		public static function pixelsAlginTile(x:Number, y:Number, resultValue:Point=null):Point
+		{
+			var x2:int = (x / TileConst.TILE_WIDTH) * TileConst.TILE_WIDTH + TileConst.WH;
+			var y2:int = (y / TileConst.TILE_HEIGHT) * TileConst.TILE_HEIGHT + TileConst.HH;
+			if (resultValue) {
+				resultValue.x = x2;
+				resultValue.y = y2;
+				return resultValue;
+			}
+			var result:Point = Engine.getPoint();
+			result.x = x2;
+			result.y = y2;
+			return result;
 		}
 		
 		public static function tileToPixels(tile:Point, resultValue:Point=null):Point
 		{
-			var x:Number = ((tile.x * TileConst.TILE_WIDTH) + TileConst.WH);
-			var y:Number = ((tile.y * TileConst.TILE_HEIGHT) + TileConst.HH);
+			var x:Number = tile.x * TileConst.TILE_WIDTH + TileConst.WH;
+			var y:Number = tile.y * TileConst.TILE_HEIGHT + TileConst.HH;
 			if (resultValue) {
 				resultValue.x = x;
 				resultValue.y = y;
-				return (resultValue);
+				return resultValue;
 			}
-			return (new Point(x, y));
+			var result:Point = Engine.getPoint();
+			result.x = x;
+			result.y = y;
+			return result;
 		}
 		
 		public static function getGridBoundsPointByDir(point:Point, dir:int):Point
@@ -282,39 +288,25 @@
 			if (dir == 0) {
 				p.x = point.x;
 				p.y = (point.y - TileConst.HH);
-			} else {
-				if (dir == 1) {
-					TileUtils.getTileTopRightPoint(pt, p);
-				} else {
-					if (dir == 2) {
-						p.x = ((point.x + TileConst.WH) - 2);
-						p.y = point.y;
-					} else {
-						if (dir == 3) {
-							TileUtils.getTileBottomRightPoint(pt, p);
-						} else {
-							if (dir == 4) {
-								p.x = point.x;
-								p.y = ((point.y + TileConst.HH) - 2);
-							} else {
-								if (dir == 5) {
-									TileUtils.getTileBottomLeftPoint(pt, p);
-								} else {
-									if (dir == 6) {
-										p.x = (point.x - TileConst.WH);
-										p.y = point.y;
-									} else {
-										if (dir == 7) {
-											TileUtils.getTileTopLeftPoint(pt, p);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+			} else if (dir == 1) {
+				TileUtils.getTileTopRightPoint(pt, p);
+			} else if (dir == 2) {
+				p.x = point.x + TileConst.WH - 2;
+				p.y = point.y;
+			} else if (dir == 3) {
+				TileUtils.getTileBottomRightPoint(pt, p);
+			} else if (dir == 4) {
+				p.x = point.x;
+				p.y = point.y + TileConst.HH - 2;
+			} else if (dir == 5) {
+				TileUtils.getTileBottomLeftPoint(pt, p);
+			} else if (dir == 6) {
+				p.x = point.x - TileConst.WH;
+				p.y = point.y;
+			} else if (dir == 7) {
+				TileUtils.getTileTopLeftPoint(pt, p);
 			}
-			return (p);
+			return p;
 		}
 		
 		public static function getTileTopLeftPoint(tile:Point, valuePoint:Point=null):Point
@@ -325,7 +317,7 @@
 				valuePoint.x = top_left_x;
 				valuePoint.y = top_left_y;
 			}
-			return (new Point(top_left_x, top_left_y));
+			return new Point(top_left_x, top_left_y);
 		}
 		
 		public static function getTileTopRightPoint(tile:Point, valuePoint:Point=null):Point
@@ -336,7 +328,7 @@
 				valuePoint.x = top_right_x;
 				valuePoint.y = top_right_y;
 			}
-			return (new Point(top_right_x, top_right_y));
+			return new Point(top_right_x, top_right_y);
 		}
 		
 		public static function getTileBottomRightPoint(tile:Point, valuePoint:Point=null):Point
@@ -347,7 +339,7 @@
 				valuePoint.x = bottom_right_x;
 				valuePoint.y = bottom_right_y;
 			}
-			return (new Point(bottom_right_x, bottom_right_y));
+			return new Point(bottom_right_x, bottom_right_y);
 		}
 		
 		public static function getTileBottomLeftPoint(tile:Point, valuePoint:Point=null):Point
@@ -358,12 +350,12 @@
 				valuePoint.x = bottom_left_x;
 				valuePoint.y = bottom_left_y;
 			}
-			return (new Point(bottom_left_x, bottom_left_y));
+			return new Point(bottom_left_x, bottom_left_y);
 		}
 		
 		public static function getTileMidVertex(tile:Point, valuePoint:Point=null):Point
 		{
-			return (tileToPixels(tile, valuePoint));
+			return tileToPixels(tile, valuePoint);
 		}
 		
 		public static function getTileLeftVertex(tile:Point, valuePoint:Point=null):Point
@@ -372,9 +364,9 @@
 			if (valuePoint == null) {
 				valuePoint = p;
 			}
-			valuePoint.x = (p.x - TileConst.WH);
+			valuePoint.x = p.x - TileConst.WH;
 			valuePoint.y = p.y;
-			return (valuePoint);
+			return valuePoint;
 		}
 		
 		public static function getTileTopVertex(tile:Point, valuePoint:Point=null):Point
@@ -384,8 +376,8 @@
 				valuePoint = p;
 			}
 			valuePoint.x = p.x;
-			valuePoint.y = (p.y - TileConst.HH);
-			return (valuePoint);
+			valuePoint.y = p.y - TileConst.HH;
+			return valuePoint;
 		}
 		
 		public static function getTileRightVertex(tile:Point, valuePoint:Point=null):Point
@@ -394,9 +386,9 @@
 			if (valuePoint == null) {
 				valuePoint = p;
 			}
-			valuePoint.x = (p.x + TileConst.WH);
+			valuePoint.x = p.x + TileConst.WH;
 			valuePoint.y = p.y;
-			return (valuePoint);
+			return valuePoint;
 		}
 		
 		public static function getTileBottomVertex(tile:Point, valuePoint:Point=null):Point
@@ -406,8 +398,8 @@
 				valuePoint = p;
 			}
 			valuePoint.x = p.x;
-			valuePoint.y = (p.y + TileConst.HH);
-			return (valuePoint);
+			valuePoint.y = p.y + TileConst.HH;
+			return valuePoint;
 		}
 		
 		public static function drawTile(graphics:Graphics, x:Number, y:Number, lineColor:uint, fill:Boolean=false, fillColor:uint=0, fillAlpha:Number=0.5):void
@@ -415,14 +407,14 @@
 			var p:Point = pixelsToTile(x, y);
 			x = p.x;
 			y = p.y;
-			var top_left_x:Number = (TileConst.TILE_WIDTH * x);
-			var top_left_y:Number = (TileConst.TILE_HEIGHT * y);
-			var top_right_x:Number = (TileConst.TILE_WIDTH * (x + 1));
-			var top_right_y:Number = (TileConst.TILE_HEIGHT * y);
-			var bottom_right_x:Number = (TileConst.TILE_WIDTH * (x + 1));
-			var bottom_right_y:Number = (TileConst.TILE_HEIGHT * (y + 1));
-			var bottom_left_x:Number = (TileConst.TILE_WIDTH * x);
-			var bottom_left_y:Number = (TileConst.TILE_HEIGHT * (y + 1));
+			var top_left_x:Number = TileConst.TILE_WIDTH * x;
+			var top_left_y:Number = TileConst.TILE_HEIGHT * y;
+			var top_right_x:Number = TileConst.TILE_WIDTH * (x + 1);
+			var top_right_y:Number = TileConst.TILE_HEIGHT * y;
+			var bottom_right_x:Number = TileConst.TILE_WIDTH * (x + 1);
+			var bottom_right_y:Number = TileConst.TILE_HEIGHT * (y + 1);
+			var bottom_left_x:Number = TileConst.TILE_WIDTH * x;
+			var bottom_left_y:Number = TileConst.TILE_HEIGHT * (y + 1);
 			
 			var commands:Vector.<int> = new Vector.<int>();
 			commands.push(1);

@@ -8,7 +8,8 @@
 
 	public class MainChar extends Char
 	{
-		public function MainChar(){
+		public function MainChar()
+		{
 			super();
 			_isMainChar_ = true;
 			this.isCharMode = true;
