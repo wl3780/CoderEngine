@@ -175,7 +175,8 @@
 			setupProLoader();
 		}
 		
-		private function setupProLoader():void{
+		private function setupProLoader():void
+		{
 			imageKeyQueue = [];
 			if (ImageLoadQueue && ImageLoadQueue.length) {
 				var path:String = null;
@@ -224,7 +225,7 @@
 				if (!loadMiniJPGBytesHash.has(path)) {
 					protoLoader = new ProtoURLLoader();
 					protoLoader.name = path;
-					protoLoader.dataFormat = "binary";
+					protoLoader.dataFormat = URLLoaderDataFormat.BINARY;
 					protoLoader.addEventListener(Event.COMPLETE, miniJPGLoadFunc);
 					protoLoader.addEventListener(IOErrorEvent.IO_ERROR, errorFunc);
 					protoLoader.load(new URLRequest(path));
@@ -377,7 +378,7 @@
 			stageIntersects(true);
 		}
 		
-		protected function timerFunc(event):void
+		protected function timerFunc(event:TimerEvent):void
 		{
 			loop();
 		}
@@ -406,134 +407,136 @@
 		
 		private function getNear():Object
 		{
-			var _local5 = null;
-			var _local8:int;
-			var _local2:int;
-			var _local7:int;
+			var keyObj:Object = null;
+			var keyIndex:int;
 			stage_point.x = Engine.stage.stageWidth / 2;
 			stage_point.y = Engine.stage.stageHeight / 2;
 			stage_point = this.globalToLocal(stage_point);
-			var _local4:int = stage_point.x / EngineGlobal.IMAGE_WIDTH;
-			var _local6:int = stage_point.y / EngineGlobal.IMAGE_HEIGHT;
-			var _local1:Point = new Point();
-			var _local3:Point = new Point(_local4, _local6);
-			_local7 = 0;
-			while (_local7 < imageKeyQueue.length) {
-				_local1.x = imageKeyQueue[_local7].index_x;
-				_local1.y = imageKeyQueue[_local7].index_y;
-				imageKeyQueue[_local7].dis = (Math.abs((_local1.x - _local3.x)) + Math.abs((_local1.y - _local3.y)));
-				if (_local7 == 0) {
-					_local5 = imageKeyQueue[_local7];
-					_local2 = _local7;
+			var tX:int = stage_point.x / EngineGlobal.IMAGE_WIDTH;
+			var tY:int = stage_point.y / EngineGlobal.IMAGE_HEIGHT;
+			var lPoint:Point = new Point();
+			var tPoint:Point = new Point(tX, tY);
+			var index:int = 0;
+			while (index < imageKeyQueue.length) {
+				lPoint.x = imageKeyQueue[index].index_x;
+				lPoint.y = imageKeyQueue[index].index_y;
+				imageKeyQueue[index].dis = Math.abs(lPoint.x - tPoint.x) + Math.abs(lPoint.y - tPoint.y);
+				if (index == 0) {
+					keyObj = imageKeyQueue[index];
+					keyIndex = index;
 				} else {
-					if (imageKeyQueue[_local7].dis < _local5.dis) {
-						_local5 = imageKeyQueue[_local7];
-						_local2 = _local7;
+					if (imageKeyQueue[index].dis < keyObj.dis) {
+						keyObj = imageKeyQueue[index];
+						keyIndex = index;
 					}
 				}
-				_local7++;
+				index++;
 			}
-			return ({
-				tar:_local5,
-				index:_local2
-			});
+			return {
+				tar:keyObj,
+				index:keyIndex
+			};
 		}
-		public function loopLoad():void{
-			var _local4 = null;
-			var _local7 = null;
-			var _local6 = null;
-			var _local3 = null;
-			var _local5 = null;
-			var _local2:Boolean;
+		
+		public function loopLoad():void
+		{
+			var data:Object = null;
+			var key:String = null;
+			var s_id:String = null;
+			var arr:Array = null;
+			var rect:Rectangle = null;
+			var b:Boolean;
 			if (imageKeyQueue.length == 0) {
 				return;
 			}
 			loadInterval = getTimer();
-			var _local1 = 20;
+			var time:int = 20;
 			if ((getTimer() - changeSceneTime) < 8000) {
-				_local1 = 0;
+				time = 0;
 			}
-			var _local9 = ((getTimer() - backgroundLoadTime) > _local1);
-			if (_local9) {
+			var pass:Boolean = (getTimer() - backgroundLoadTime) > time;
+			if (pass) {
 				backgroundLoadTime = getTimer();
 			}
-			var _local8:int;
-			while (_local8 < 4) {
-				if (((imageKeyQueue.length) && ((_limitIndex_ > 0)))) {
-					_local4 = getNear();
-					_local7 = _local4.tar.key;
-					_local6 = _local4.tar.scene_id;
-					_local3 = _local7.split(Asswc.LINE);
-					_local5 = new Rectangle();
-					_local5.x = ((_local3[0] * EngineGlobal.IMAGE_WIDTH) - 150);
-					_local5.y = ((_local3[1] * EngineGlobal.IMAGE_HEIGHT) - 50);
-					_local5.width = (EngineGlobal.IMAGE_WIDTH + 300);
-					_local5.height = (EngineGlobal.IMAGE_HEIGHT + 100);
-					_local2 = stage_rect.intersects(_local5);
-					_local2 = Scene.scene.mainChar.isRuning;
-					if (((stage_rect.intersects(_local5)) || ((((((_limitIndex_ > 0)) || ((Scene.scene.mainChar.isRuning == false)))) && (_local9))))) {
-						imageKeyQueue.splice(_local4.index, 1);
-						if (_local6 == scene_id) {
-							load(_local3[0], _local3[1]);
+			var index:int;
+			while (index < 4) {
+				if (imageKeyQueue.length && _limitIndex_ > 0) {
+					data = getNear();
+					key = data.tar.key;
+					s_id = data.tar.scene_id;
+					arr = key.split(Asswc.LINE);
+					rect = new Rectangle();
+					rect.x = arr[0] * EngineGlobal.IMAGE_WIDTH - 150;
+					rect.y = arr[1] * EngineGlobal.IMAGE_HEIGHT - 50;
+					rect.width = EngineGlobal.IMAGE_WIDTH + 300;
+					rect.height = EngineGlobal.IMAGE_HEIGHT + 100;
+					b = stage_rect.intersects(rect);
+					b = Scene.scene.mainChar.isRuning;
+					// 判断有问题
+					if (stage_rect.intersects(rect) || _limitIndex_ > 0 || Scene.scene.mainChar.isRuning == false && pass) {
+						imageKeyQueue.splice(data.index, 1);
+						if (s_id == scene_id) {
+							load(arr[0], arr[1]);
 						}
 					}
 				}
-				_local8++;
+				index++;
 			}
 		}
-		public function loadImage():void{
-			var _local8:int;
+		
+		public function loadImage():void
+		{
 			if (!isReady) {
 				return;
 			}
-			var _local3:Point = this.globalToLocal(new Point());
-			var _local2:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
-			var _local7:int = (_local3.x / EngineGlobal.IMAGE_WIDTH);
-			var _local6:int = (_local3.y / EngineGlobal.IMAGE_HEIGHT);
-			var _local4:int = (_local2.x / EngineGlobal.IMAGE_WIDTH);
-			var _local1:int = (_local2.y / EngineGlobal.IMAGE_HEIGHT);
-			var _local9:int = Math.min(_local7, _local4);
-			var _local10:int = Math.max(_local7, _local4);
-			var _local5:int = Math.min(_local6, _local1);
-			var _local12:int = Math.max(_local6, _local1);
-			var _local11 = _local9;
-			while (_local11 <= _local10) {
-				_local8 = _local5;
-				while (_local8 <= _local12) {
-					loopImageLoadFunc(_local11, _local8);
-					_local8++;
+			var sPoint:Point = this.globalToLocal(new Point());
+			var ePoint:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
+			var p1_x:int = sPoint.x / EngineGlobal.IMAGE_WIDTH;
+			var p1_y:int = sPoint.y / EngineGlobal.IMAGE_HEIGHT;
+			var p2_x:int = ePoint.x / EngineGlobal.IMAGE_WIDTH;
+			var p2_y:int = ePoint.y / EngineGlobal.IMAGE_HEIGHT;
+			var start_x:int = Math.min(p1_x, p2_x);
+			var end_x:int = Math.max(p1_x, p2_x);
+			var start_y:int = Math.min(p1_y, p2_y);
+			var end_y:int = Math.max(p1_y, p2_y);
+			var i:int = start_x;
+			var j:int;
+			while (i <= end_x) {
+				j = start_y;
+				while (j <= end_y) {
+					loopImageLoadFunc(i, j);
+					j++;
 				}
-				_local11++;
+				i++;
 			}
 		}
-		private function loopImageLoadFunc(index_x:int, index_y:int):void{
-			var _local5 = null;
-			var _local3:Boolean;
-			var _local6:int;
-			if ((((index_x < 0)) || ((index_y < 0)))) {
+		
+		private function loopImageLoadFunc(index_x:int, index_y:int):void
+		{
+			if (index_x < 0 || index_y < 0) {
 				return;
 			}
-			var _local4:String = ((((((((EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_") + scene_id) + "/") + index_x) + Asswc.LINE) + index_y) + ".jpg?ver=") + EngineGlobal.version);
-			if (requestHash.has(_local4)) {
+			var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_" + scene_id + "/" + index_x + Asswc.LINE + index_y + ".jpg?ver=" + EngineGlobal.version;
+			if (requestHash.has(path)) {
 				return;
 			}
-			tar_rect.x = (index_x * EngineGlobal.IMAGE_WIDTH);
-			tar_rect.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
+			tar_rect.x = index_x * EngineGlobal.IMAGE_WIDTH;
+			tar_rect.y = index_y * EngineGlobal.IMAGE_HEIGHT;
 			if (stage_rect.intersects(tar_rect)) {
-				_local5 = ((index_x + "_") + index_y);
-				_local3 = false;
-				_local6 = 0;
-				while (_local6 < imageKeyQueue.length) {
-					if (imageKeyQueue[_local6].key == _local5) {
-						_local3 = true;
+				var key:String = index_x + "_" + index_y;
+				var isIn:Boolean = false;
+				var index:int = 0;
+				while (index < imageKeyQueue.length) {
+					if (imageKeyQueue[index].key == key) {
+						isIn = true;
 						break;
 					}
-					_local6++;
+					index++;
 				}
-				if (_local3 == false) {
+				if (isIn == false) {
 					imageKeyQueue.push({
 						scene_id:scene_id,
-						key:_local5,
+						key:key,
 						dis:0,
 						index_x:index_x,
 						index_y:index_y
@@ -541,104 +544,113 @@
 				}
 			}
 		}
-		private function load(index_x:int, index_y:int):void{
-			var _local3 = null;
-			var _local4:String = ((((((((EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_") + scene_id) + "/") + index_x) + Asswc.LINE) + index_y) + ".jpg?ver=") + EngineGlobal.version);
-			if (((!(requestHash.has(_local4))) && ((_limitIndex_ > 0)))) {
-				if (loaderQueue.length == 0) {
-					_local3 = new Loader();
-				}
+		
+		private function load(index_x:int, index_y:int):void
+		{
+			var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_" + scene_id + "/" + index_x + Asswc.LINE + index_y + ".jpg?ver=" + EngineGlobal.version;
+			if (!requestHash.has(path) && _limitIndex_ > 0) {
+				var tmpLoader:Loader = null;
 				if (loaderQueue.length) {
-					_local3 = loaderQueue.pop();
+					tmpLoader = loaderQueue.pop();
+					try {
+						tmpLoader.unload();
+					} catch(e:Error) {
+					}
+				} else {
+					tmpLoader = new Loader();
 				}
-				try {
-					_local3.unload();
-				} catch(e:Error) {
-				}
-				requestHash.put(_local4, _local3);
-				_local3.name = _local4;
-				_local3.x = (index_x * EngineGlobal.IMAGE_WIDTH);
-				_local3.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
-				_local3.load(new URLRequest(_local4), loaderContext);
-				_local3.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadedFunc);
-				_local3.contentLoaderInfo.addEventListener(Event.UNLOAD, onUnloadFunc);
-				_local3.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
-				_limitIndex_ = (_limitIndex_ - 1);
+				requestHash.put(path, tmpLoader);
+				tmpLoader.name = path;
+				tmpLoader.x = index_x * EngineGlobal.IMAGE_WIDTH;
+				tmpLoader.y = index_y * EngineGlobal.IMAGE_HEIGHT;
+				tmpLoader.load(new URLRequest(path), loaderContext);
+				tmpLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadedFunc);
+				tmpLoader.contentLoaderInfo.addEventListener(Event.UNLOAD, onUnloadFunc);
+				tmpLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
+				_limitIndex_ --;
 			}
 		}
-		protected function onErrorFunc(event:IOErrorEvent):void{
-			var _local2:Loader = (event.target.loader as Loader);
-			_local2.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
-			_local2.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
-			_local2.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
+		
+		protected function onErrorFunc(event:IOErrorEvent):void
+		{
+			var tmpLoader:Loader = event.target.loader as Loader;
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
+			requestHash.remove(tmpLoader.name);
+			if (_limitIndex_ < _general_limitIndex_) {
+				_limitIndex_ ++;
+			}
+		}
+		
+		protected function onUnloadFunc(event:Event):void
+		{
+			var tmpLoader:Loader = event.target.loader as Loader;
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
 			requestHash.remove(event.target.loader.name);
 			if (_limitIndex_ < _general_limitIndex_) {
-				_limitIndex_ = (_limitIndex_ + 1);
+				_limitIndex_ --;
 			}
 		}
-		protected function onUnloadFunc(event:Event):void{
-			var _local2:Loader = (event.target.loader as Loader);
-			_local2.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
-			_local2.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
-			_local2.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
-			requestHash.remove(event.target.loader.name);
+		
+		protected function onLoadedFunc(event:Event):void
+		{
+			var tmpLoader:Loader = event.target.loader as Loader;
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
+			tmpLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
 			if (_limitIndex_ < _general_limitIndex_) {
-				_limitIndex_ = (_limitIndex_ + 1);
+				_limitIndex_ ++;
 			}
 		}
-		protected function onLoadedFunc(event:Event):void{
-			var _local2:Loader = (event.target.loader as Loader);
-			_local2.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
-			_local2.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
-			_local2.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
-			if (_limitIndex_ < _general_limitIndex_) {
-				_limitIndex_ = (_limitIndex_ + 1);
-			}
-		}
-		public function stageIntersects(pass:Boolean=false):void{
-			var _local13:int;
+		
+		public function stageIntersects(pass:Boolean=false):void
+		{
 			if (!isReady) {
 				return;
 			}
-			if ((((requestHash.length == 0)) && (!(pass)))) {
+			if (requestHash.length == 0 && !pass) {
 				return;
 			}
-			var _local9:Point = this.globalToLocal(new Point());
-			var _local8:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
-			var _local12:int = (_local9.x / EngineGlobal.IMAGE_WIDTH);
-			var _local10:int = (_local9.y / EngineGlobal.IMAGE_HEIGHT);
-			var _local3:int = (_local8.x / EngineGlobal.IMAGE_WIDTH);
-			var _local2:int = (_local8.y / EngineGlobal.IMAGE_HEIGHT);
-			var _local5:int = Math.min(_local12, _local3);
-			var _local6:int = Math.max(_local12, _local3);
-			var _local4:int = Math.min(_local10, _local2);
-			var _local7:int = Math.max(_local10, _local2);
-			var _local11:int;
-			while (_local11 <= _local6) {
-				_local13 = _local4;
-				while (_local13 <= _local7) {
-					onRenderImageLoadFunc(_local11, _local13);
-					_local13++;
+			var s_p:Point = this.globalToLocal(new Point());
+			var e_p:Point = this.globalToLocal(new Point(Engine.stage.stageWidth, Engine.stage.stageHeight));
+			var p1_x:int = s_p.x / EngineGlobal.IMAGE_WIDTH;
+			var p1_y:int = s_p.y / EngineGlobal.IMAGE_HEIGHT;
+			var p2_x:int = e_p.x / EngineGlobal.IMAGE_WIDTH;
+			var p2_y:int = e_p.y / EngineGlobal.IMAGE_HEIGHT;
+			var start_x:int = Math.min(p1_x, p2_x);
+			var end_x:int = Math.max(p1_x, p2_x);
+			var start_y:int = Math.min(p1_y, p2_y);
+			var end_y:int = Math.max(p1_y, p2_y);
+			var indexI:int;
+			var indexJ:int;
+			while (indexI <= end_x) {
+				indexJ = start_y;
+				while (indexJ <= end_y) {
+					onRenderImageLoadFunc(indexI, indexJ);
+					indexJ++;
 				}
-				_local11++;
+				indexI++;
 			}
 		}
-		private function onRenderImageLoadFunc(index_x, index_y):void{
-			var _local5 = null;
-			var _local4 = null;
-			var _local3 = null;
-			tar_rect.x = (index_x * EngineGlobal.IMAGE_WIDTH);
-			tar_rect.y = (index_y * EngineGlobal.IMAGE_HEIGHT);
+		
+		private function onRenderImageLoadFunc(index_x:int, index_y:int):void
+		{
+			tar_rect.x = index_x * EngineGlobal.IMAGE_WIDTH;
+			tar_rect.y = index_y * EngineGlobal.IMAGE_HEIGHT;
 			if (stage_rect.intersects(tar_rect)) {
-				_local5 = ((((((((EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_") + scene_id) + "/") + index_x) + Asswc.LINE) + index_y) + ".jpg?ver=") + EngineGlobal.version);
-				if (loadHash.has(_local5) == false) {
-					_local4 = (requestHash.take(_local5) as Loader);
-					if (_local4) {
-						_local3 = (_local4.content as Bitmap);
+				var path:String = EngineGlobal.SCENE_IMAGE_DIR + "map_image/scene_" + scene_id + "/" + index_x + Asswc.LINE + index_y + ".jpg?ver=" + EngineGlobal.version;
+				if (loadHash.has(path) == false) {
+					var image:Bitmap = null;
+					var tmpLoader:Loader = requestHash.take(path) as Loader;
+					if (tmpLoader) {
+						image = tmpLoader.content as Bitmap;
 					}
-					if (((((_local4) && (_local3))) && (_local3.bitmapData))) {
-						loadHash.put(_local5, _local5);
-						draw2(this.graphics, tar_rect.x, tar_rect.y, _local3.bitmapData);
+					if (image && image.bitmapData) {
+						loadHash.put(path, path);
+						draw2(this.graphics, tar_rect.x, tar_rect.y, image.bitmapData);
 					}
 				}
 			}

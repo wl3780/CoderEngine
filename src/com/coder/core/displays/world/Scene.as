@@ -37,6 +37,7 @@
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.GradientType;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.display.Stage;
@@ -46,6 +47,7 @@
 	import flash.events.TimerEvent;
 	import flash.filters.BlurFilter;
 	import flash.filters.ColorMatrixFilter;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
@@ -173,107 +175,102 @@
 		
 		protected function setup():void
 		{
-			var _local10 = null;
-			var _local8 = null;
-			var _local4 = null;
-			var _local13 = null;
-			var _local12 = null;
-			var _local11 = null;
-			var _local5 = null;
-			var _local9:int;
-			var _local6 = null;
-			var _local1 = null;
-			var _local3 = null;
-			var _local7:int;
-			var _local2 = null;
 			if (inited) {
 				return;
 			}
 			if (EngineGlobal.char_shadow == null) {
-				_local10 = [30, 80, 120];
-				_local8 = [20, 30, 50];
-				_local4 = [60, 120, 150];
-				_local13 = [40, 40, 60];
-				_local12 = [15, 15, 15];
-				_local11 = [5, 2, 2];
-				_local5 = new Shape();
-				_local9 = 0;
-				while (_local9 < _local10.length) {
-					_local5.graphics.clear();
-					_local5.graphics.beginGradientFill("linear", [0, 0, 0, 0], [0.9, 0.8, 0.7, 0.6], [1, 1, 1, 1]);
-					_local5.graphics.drawEllipse(0, 0, _local10[_local9], _local8[_local9]);
-					_local5.filters = [new BlurFilter(20, 10)];
-					_local6 = _local5.getBounds(_local5);
-					_local1 = new BitmapData(_local4[_local9], _local13[_local9], true, 0);
-					_local3 = RecoverUtils.matrix;
-					_local3.tx = _local12[_local9];
-					_local3.ty = _local11[_local9];
-					_local1.draw(_local5, _local3);
-					EngineGlobal.char_shadow_arr.push(_local1);
-					_local9++;
+				var w:Array = [30, 80, 120];
+				var h:Array = [20, 30, 50];
+				var bw:Array = [60, 120, 150];
+				var bh:Array = [40, 40, 60];
+				var tx:Array = [15, 15, 15];
+				var ty:Array = [5, 2, 2];
+				var shape:Shape = new Shape();
+				
+				var rect:Rectangle = null;
+				var bmd:BitmapData = null;
+				var mat:Matrix = null;
+				var index:int = 0;
+				while (index < w.length) {
+					shape.graphics.clear();
+					shape.graphics.beginGradientFill(GradientType.LINEAR, [0, 0, 0, 0], [0.9, 0.8, 0.7, 0.6], [1, 1, 1, 1]);
+					shape.graphics.drawEllipse(0, 0, w[index], h[index]);
+					shape.filters = [new BlurFilter(20, 10)];
+					
+					rect = shape.getBounds(shape);
+					bmd = new BitmapData(bw[index], bh[index], true, 0);
+					mat = RecoverUtils.matrix;
+					mat.tx = tx[index];
+					mat.ty = ty[index];
+					bmd.draw(shape, mat);
+					EngineGlobal.char_shadow_arr.push(bmd);
+					index++;
 				}
 				EngineGlobal.char_shadow = EngineGlobal.char_shadow_arr[0];
-				_local5 = null;
+				shape = null;
 			}
-			timer.addEventListener("timer", timerFunc);
+			
+			timer.addEventListener(TimerEvent.TIMER, timerFunc);
 			timer.start();
-			var _local14:Boolean;
-			this.mouseEnabled = _local14;
-			this.mouseChildren = _local14;
-			_local14 = false;
-			this.tabEnabled = _local14;
-			this.tabChildren = _local14;
+			
+			this.mouseEnabled = false;
+			this.mouseChildren = false;
+			this.tabEnabled = false;
+			this.tabChildren = false;
+			
 			this.$nodeTree = new NodeTree(SceneConst.SCENE_ITEM_NODER);
-			$nodeTree.build(new Rectangle(0, 0, 15000, 15000), 80);
+			this.$nodeTree.build(new Rectangle(0, 0, 15000, 15000), 80);
+			
 			this.$topLayer = new DisplaySprite();
-			_local14 = false;
-			$topLayer.mouseChildren = _local14;
-			this.$topLayer.mouseEnabled = _local14;
-			_local14 = false;
-			$topLayer.tabEnabled = _local14;
-			this.$topLayer.tabChildren = _local14;
-			$topLayer.name = "$topLayer";
+			this.$topLayer.mouseChildren = false;
+			this.$topLayer.mouseEnabled = false;
+			this.$topLayer.tabEnabled = false;
+			this.$topLayer.tabChildren = false;
+			this.$topLayer.name = SceneConst.TOP_LAYER;
+			
 			this.$middleLayer = new Sprite();
-			_local14 = false;
-			$middleLayer.mouseChildren = _local14;
-			this.$middleLayer.mouseEnabled = _local14;
-			_local14 = false;
-			$middleLayer.tabEnabled = _local14;
-			this.$middleLayer.tabChildren = _local14;
-			$middleLayer.name = "middleLayer";
+			this.$middleLayer.mouseChildren = false;
+			this.$middleLayer.mouseEnabled = false;
+			this.$middleLayer.tabEnabled = false;
+			this.$middleLayer.tabChildren = false;
+			this.$middleLayer.name = SceneConst.MIDDLE_LAYER;
+			
 			this.$itemLayer = new Sprite();
-			_local14 = false;
-			$itemLayer.mouseEnabled = _local14;
-			this.$itemLayer.mouseChildren = _local14;
-			_local14 = false;
-			$itemLayer.tabEnabled = _local14;
-			this.$itemLayer.tabChildren = _local14;
-			$itemLayer.name = "$itemLayer";
-			$bottomLayer = new Sprite();
-			_local14 = false;
-			$bottomLayer.mouseEnabled = _local14;
-			this.$bottomLayer.mouseChildren = _local14;
-			_local14 = false;
-			$bottomLayer.tabEnabled = _local14;
-			this.$bottomLayer.tabChildren = _local14;
-			$bottomLayer.name = "$bottomLayer";
-			$mapLayer = new MapLayer();
+			this.$itemLayer.mouseEnabled = false;
+			this.$itemLayer.mouseChildren = false;
+			this.$itemLayer.tabEnabled = false;
+			this.$itemLayer.tabChildren = false;
+			this.$itemLayer.name = SceneConst.ITEM_LAYER;
+			
+			this.$bottomLayer = new Sprite();
+			this.$bottomLayer.mouseEnabled = false;
+			this.$bottomLayer.mouseChildren = false;
+			this.$bottomLayer.tabEnabled = false;
+			this.$bottomLayer.tabChildren = false;
+			this.$bottomLayer.name = SceneConst.BOTTOM_LAYER;
+			
 			this.addChild($bottomLayer);
 			this.addChild($itemLayer);
 			this.addChild($middleLayer);
 			this.addChild($topLayer);
-			$mainChar = new MainChar();
-			SuperKey.getInstance().addEventListener("DEBUG", debug);
-			SuperKey.getInstance().addEventListener("keyDown", _KeyDownFunc_);
-			SuperKey.getInstance().addEventListener("keyUp", _KeyUpFunc_);
-			this.addItem($mainChar, "MIDDLE_LAYER");
-			_local7 = 0;
-			while (_local7 < Asswc.POOL_INDEX) {
-				_local2 = Char.createChar();
-				_local2.charName = "  ";
-				_local2.shadowAvatar("ym1001");
-				_local2.dispose();
-				_local7++;
+			
+			this.$mapLayer = new MapLayer();
+			
+			this.$mainChar = new MainChar();
+			this.addItem($mainChar, SceneConst.MIDDLE_LAYER);
+			
+			SuperKey.getInstance().addEventListener(SuperKey.DEBUG, debug);
+			SuperKey.getInstance().addEventListener(KeyboardEvent.KEY_DOWN, _KeyDownFunc_);
+			SuperKey.getInstance().addEventListener(KeyboardEvent.KEY_UP, _KeyUpFunc_);
+			
+			var char:Char = null;
+			var pIndex:int = 0;
+			while (pIndex < Asswc.POOL_INDEX) {
+				char = Char.createChar();
+				char.charName = "  ";
+				char.shadowAvatar("ym1001");
+				char.dispose();
+				pIndex++;
 			}
 		}
 		
@@ -420,7 +417,7 @@
 			while (index < mapData.items.length) {
 				data = mapData.items[index];
 				eff = AvatarEffect.createChar();
-				eff.type = "STATIC_STAGE_EFFECT";
+				eff.type = SceneConst.STATIC_STAGE_EFFECT;
 				eff.autoStageVisible = true;
 				eff.name = "state_stage_effect";
 				eff.x = data.x;
@@ -430,11 +427,11 @@
 				eff.proto = data;
 				eff.setAngleToDir(eff.tilePoint, data.dir);
 				if (mapData.map_id == 10291) {
-					eff.loadEffect(data.item_id, "body_bottom_effect", null, false, 0, 0, 0, -2, (((Math.random() * 200) >> 0) + 250));
-					addItem(eff, "BOTTOM_LAYER");
+					eff.loadEffect(data.item_id, SceneConst.BODY_BOTTOM_EFFECT, null, false, 0, 0, 0, -2, (((Math.random() * 200) >> 0) + 250));
+					addItem(eff, SceneConst.BOTTOM_LAYER);
 				} else {
-					eff.loadEffect(data.item_id, "MIDDLE_LAYER", null, false, 0, 0, 0, -2, (((Math.random() * 200) >> 0) + 250));
-					addItem(eff, "MIDDLE_LAYER");
+					eff.loadEffect(data.item_id, SceneConst.MIDDLE_LAYER, null, false, 0, 0, 0, -2, (((Math.random() * 200) >> 0) + 250));
+					addItem(eff, SceneConst.MIDDLE_LAYER);
 				}
 				effectItems.push(eff);
 				index++;
@@ -446,7 +443,7 @@
 			var bitmap:Bitmap = null;
 			var rect:Rectangle = null;
 			var idName:String = null;
-			var char:Char = null;
+			var owner:Char = null;
 			var mPoint:Point = new Point(this.mouseX, this.mouseY);
 			var disArr:Array = fine(mPoint.x, mPoint.y, 100);
 			var target:INoderDisplay = HitTest.getChildUnderPoint(this, mPoint, disArr, [mainChar]) as INoderDisplay;
@@ -458,9 +455,9 @@
 						rect = bitmap.getBounds(bottomLayer);
 						if (rect.contains(bottomLayer.mouseX, bottomLayer.mouseY)) {
 							idName = bitmap.name.split("#")[0];
-							char = AvatarUnitDisplay.takeUnitDisplay(idName) as Char;
-							if (char && char.type == "char" && char.speciaState == "STATE_ON_SELL" && char != mainChar) {
-								target = char as Char;
+							owner = AvatarUnitDisplay.takeUnitDisplay(idName) as Char;
+							if (owner && owner.type == "char" && owner.speciaState == "STATE_ON_SELL" && owner != mainChar) {
+								target = owner as Char;
 								break;
 							}
 						}
@@ -509,65 +506,66 @@
 			if (!isDepthChange) {
 				return;
 			}
-			var _local3 = null;
-			var _local9:int;
-			var _local8:int;
-			var _local1 = null;
-			var _local2:Boolean;
-			var _local6 = null;
-			var _local5:int;
 			isDepthChange = false;
+			
+			var item:ISceneItem = null;
 			stageIntersectsHash = new Dictionary();
-			var _local10:Array = [];
-			var _local4:int = this.$middleLayer.numChildren;
-			_local9 = 0;
-			while (_local9 < _local4) {
-				_local3 = ($middleLayer.getChildAt(_local9) as ISceneItem);
-				if ((_local3 as ISceneItem)) {
-					if (_local3.stageIntersects) {
-						if (stageIntersectsHash[_local3.char_id] == null) {
-							stageIntersectsHash[_local3.char_id] = _local3.char_id;
-							_local10.push(_local3);
+			var array:Array = [];
+			var i:int = 0;
+			var count:int = this.$middleLayer.numChildren;
+			while (i < count) {
+				item = this.$middleLayer.getChildAt(i) as ISceneItem;
+				if (item) {
+					if (item.stageIntersects) {
+						if (stageIntersectsHash[item.char_id] == null) {
+							stageIntersectsHash[item.char_id] = item.char_id;
+							array.push(item);
 						}
 					} else {
-						if ((((_local3.layer == "MIDDLE_LAYER")) && (!((mapData.scene_id == "10291"))))) {
-							$middleLayer.removeChild((_local3 as DisplayObject));
-							_local9--;
-							_local4--;
+						if (item.layer == SceneConst.MIDDLE_LAYER && mapData.scene_id != "10291") {
+							this.$middleLayer.removeChild(item as DisplayObject);
+							i--;
+							count--;
 						}
 					}
 				}
-				_local9++;
+				i++;
 			}
-			_local8 = 0;
-			while (_local8 < effectItems.length) {
-				_local1 = effectItems[_local8];
-				_local2 = ((stageIntersectsHash[_local3.char_id])==null) ? false : true;
-				if (!_local1.stageIntersects) {
-					_local6 = (_local1 as DisplayObject);
-					if (_local6.parent) {
-						_local6.parent.removeChild(_local6);
-						_local5 = _local10.indexOf(_local1);
-						_local10.splice(_local5, 1);
+			
+			var eff:AvatarEffect = null;
+			var isOk:Boolean;
+			var tar:DisplayObject = null;
+			var index:int;
+			var j:int = 0;
+			while (j < effectItems.length) {
+				eff = effectItems[j];
+				isOk = stageIntersectsHash[item.char_id]==null ? false : true;
+				if (!eff.stageIntersects) {
+					tar = eff as DisplayObject;
+					if (tar.parent) {
+						tar.parent.removeChild(tar);
+						index = array.indexOf(eff);
+						array.splice(index, 1);
 					}
 				} else {
-					if (_local2) {
-						_local10.push(_local1);
+					if (isOk) {
+						array.push(eff);
 					}
 				}
-				_local8++;
+				j++;
 			}
-			_local4 = _local10.length;
-			_local10.sortOn(["y", "type"], [16, 16]);
-			var _local7:int;
-			while (_local7 < _local4) {
-				_local3 = _local10[_local7];
-				if (_local7 < this.$middleLayer.numChildren) {
-					this.$middleLayer.addChildAt((_local3 as DisplayObject), _local7);
+			
+			count = array.length;
+			array.sortOn(["y", "type"], [Array.NUMERIC, Array.NUMERIC]);
+			var k:int;
+			while (k < count) {
+				item = array[k];
+				if (k < this.$middleLayer.numChildren) {
+					this.$middleLayer.addChildAt(item as DisplayObject, k);
 				} else {
-					this.$middleLayer.addChild((_local3 as DisplayObject));
+					this.$middleLayer.addChild(item as DisplayObject);
 				}
-				_local7++;
+				k++;
 			}
 		}
 		
@@ -592,34 +590,32 @@
 		
 		public function enterFrameAddTo():void
 		{
-			var _local4:int;
-			var _local2 = null;
-			var _local1 = null;
-			var _local3:int = tarHash.length;
-			_local4 = 0;
-			while (_local4 < _local3) {
+			var value:ISceneItem = null;
+			var layer:String = null;
+			var len:int = tarHash.length;
+			var i:int = 0;
+			while (i < len) {
 				if (tarHash.length) {
-					_local2 = tarHash.shift();
-					_local1 = _local2.layer;
-					var _local5 = _local1;
-					while ("MIDDLE_LAYER" === _local5) {
-						this.$middleLayer.addChild((_local2 as DisplayObject));
-						//unresolved jump
-						this.$itemLayer.addChild((_local2 as DisplayObject));
-						//unresolved jump
-						this.$topLayer.addChild((_local2 as DisplayObject));
-						//unresolved jump
-						this.$bottomLayer.addChild((_local2 as DisplayObject));
-						//unresolved jump
-						this.$itemLayer.addChild((_local2 as DisplayObject));
-						//unresolved jump
+					value = tarHash.shift();
+					switch (layer) {
+						case SceneConst.MIDDLE_LAYER:
+							this.$middleLayer.addChild(value as DisplayObject);
+							break;
+						case SceneConst.ITEM_LAYER:
+							this.$itemLayer.addChild(value as DisplayObject);
+							break;
+						case SceneConst.TOP_LAYER:
+							this.$topLayer.addChild(value as DisplayObject);
+							break;
+						case SceneConst.BOTTOM_LAYER:
+							this.$bottomLayer.addChild(value as DisplayObject);
+							break;
+						case SceneConst.ITEM_LAYER:
+							this.$itemLayer.addChild(value as DisplayObject);
+							break;
 					}
-					//unresolved if
-					//unresolved if
-					//unresolved if
-					//unresolved if
 				}
-				_local4++;
+				i++;
 			}
 		}
 		
@@ -643,92 +639,92 @@
 		
 		public function clean():void
 		{
-			var _local1 = null;
-			var _local8:int;
-			var _local15 = null;
-			var _local10:int;
-			var _local2 = null;
-			var _local12:Boolean;
-			var _local7:int;
-			var _local13 = null;
-			var _local6:int;
-			var _local5 = null;
-			var _local4 = null;
+			var char:DisplayObject = null;
+			var j:int;
+			var arr:Array = null;
+			var ok:Boolean;
+			var k:int;
+			var rIndex:int;
+			var avatar:Avatar = null;
+			var display:AvatarUnitDisplay = null;
 			Char.charQueueHash.length = 0;
 			var _local9:Array = [];
-			var _local11:Array = [$middleLayer, itemLayer, bottomLayer, topLayer];
-			_local8 = 0;
-			while (_local8 < _local11.length) {
-				_local15 = _local11[_local8];
-				_local10 = 0;
-				_local2 = [];
-				while (_local10 < _local15.numChildren) {
-					_local1 = _local15.getChildAt(_local10);
-					if ((((_local1 as IAvatar)) && (!((_local1 == mainChar))))) {
-						_local12 = true;
-						if ((((_local1 as AvatarEffect)) && (((((((_local1 as AvatarEffect).isLockDispose == false)) || (!((_local1 as AvatarEffect).autoRecover)))) || (!((_local1 as AvatarEffect).autoDispose)))))) {
-							_local12 = false;
+			var displayQueue:Array = [$middleLayer, $itemLayer, $bottomLayer, $topLayer];
+			var i:int = 0;
+			var tarx:Sprite = null;
+			while (i < displayQueue.length) {
+				tarx = displayQueue[i];
+				j = 0;
+				arr = [];
+				while (j < tarx.numChildren) {
+					char = tarx.getChildAt(j);
+					if (char as IAvatar && char != mainChar) {
+						ok = true;
+						if ((char as AvatarEffect) && (char as AvatarEffect).isLockDispose == false || !(char as AvatarEffect).autoRecover || !(char as AvatarEffect).autoDispose) {
+							ok = false;
 						}
-						if (_local12) {
-							_local2.push(_local1);
+						if (ok) {
+							arr.push(char);
 						}
 					}
-					_local10++;
+					j++;
 				}
-				_local7 = 0;
-				while (_local7 < _local2.length) {
-					_local1 = _local2[_local7];
-					IAvatar(_local1).dispose();
-					_local7++;
+				k = 0;
+				while (k < arr.length) {
+					char = arr[k];
+					IAvatar(char).dispose();
+					k++;
 				}
-				_local2.length = 0;
-				_local8++;
+				arr.length = 0;
+				i++;
 			}
+			
 			instanceHash = new Hash();
 			this.addItem(mainChar, mainChar.layer);
 			mainChar.showHeadShapAndShadowShape();
-			var _local14:Array = [];
-			var _local3:Hash = AvatarUnitDisplay.instanceHash;
-			for each (_local13 in _local3) {
-				if (_local13 != mainChar) {
-					if ((_local13 as AvatarEffect)) {
-						if (AvatarEffect(_local13).autoRecover) {
-							_local3.remove(_local13.id);
-							_local13.dispose();
+			var reload:Array = [];
+			var hash:Hash = AvatarUnitDisplay.instanceHash;
+			for each (var tar in hash) {
+				if (tar != mainChar) {
+					if (tar as AvatarEffect) {
+						if (AvatarEffect(tar).autoRecover) {
+							hash.remove(tar.id);
+							tar.dispose();
 						} else {
-							_local14.push(_local13);
+							reload.push(tar);
 						}
 					} else {
-						if ((((_local13 as Char)) && (Char(_local13).isDisposed))) {
-							_local3.remove(_local13.id);
+						if (tar as Char && Char(tar).isDisposed) {
+							hash.remove(tar.id);
 						} else {
-							_local14.push(_local13);
+							reload.push(tar);
 						}
 					}
 				}
 			}
+			
 			WealthStoragePort.clear();
 			WealthElisor.isClearing = false;
-			_local6 = 0;
-			while (_local6 < _local14.length) {
-				_local13 = _local14[_local6];
-				if ((_local13 as AvatarEffect)) {
-					AvatarEffect(_local13).unit.reloadEffectHash();
+			rIndex = 0;
+			while (rIndex < reload.length) {
+				tar = reload[rIndex];
+				if (tar as AvatarEffect) {
+					AvatarEffect(tar).unit.reloadEffectHash();
 				} else {
-					_local5 = (_local13 as Avatar);
-					if (_local5) {
-						_local5.unit.loadActSWF();
-						_local5.unit.reloadEffectHash();
+					avatar = tar as Avatar;
+					if (avatar) {
+						avatar.unit.loadActSWF();
+						avatar.unit.reloadEffectHash();
 					}
-					_local4 = (_local13 as AvatarUnitDisplay);
-					if (((_local4) && (_local4.unit))) {
-						_local4.unit.loadActSWF();
-						_local4.unit.reloadEffectHash();
+					display = tar as AvatarUnitDisplay;
+					if (display && display.unit) {
+						display.unit.loadActSWF();
+						display.unit.reloadEffectHash();
 					}
 				}
-				_local6++;
+				rIndex++;
 			}
-			_local14 = null;
+			reload = null;
 		}
 		
 		public function cleanCheck():void
