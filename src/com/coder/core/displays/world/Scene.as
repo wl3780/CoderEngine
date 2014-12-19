@@ -684,7 +684,7 @@
 			mainChar.showHeadShapAndShadowShape();
 			var reload:Array = [];
 			var hash:Hash = AvatarUnitDisplay.instanceHash;
-			for each (var tar in hash) {
+			for each (var tar:IAvatar in hash) {
 				if (tar != mainChar) {
 					if (tar as AvatarEffect) {
 						if (AvatarEffect(tar).autoRecover) {
@@ -729,92 +729,92 @@
 		
 		public function cleanCheck():void
 		{
-			var _local2 = null;
-			var _local9:int;
-			var _local16 = null;
-			var _local11:int;
-			var _local17 = null;
-			var _local13:Boolean;
-			var _local4 = null;
-			var _local8 = null;
-			var _local7:int;
-			var _local1 = null;
-			var _local6 = null;
-			var _local5 = null;
+			var char = null;
+			var i:int;
+			var charx = null;
+			var j:int;
+			var ok:Boolean;
+			var eff:AvatarEffect = null;
+			var k:int;
+			var tar2:IAvatar = null;
+			var avatar:Avatar = null;
+			var display:AvatarUnitDisplay = null;
 			if (WealthElisor.isClearing) {
 				return;
 			}
-			var _local10:Array = [];
-			var _local12:Array = [$middleLayer, itemLayer, bottomLayer, topLayer];
-			_local9 = 0;
-			while (_local9 < _local12.length) {
-				_local16 = _local12[_local9];
-				_local2 = _local16;
-				_local11 = 0;
-				while (_local11 < _local16.numChildren) {
-					if ((((((_local2 as IAvatar)) && (!((_local2 == mainChar))))) && (!((_local8.name == "tile"))))) {
-						_local13 = true;
-						if ((((((((((_local2 as AvatarEffect)) && (((_local2 as AvatarEffect).isLockDispose == false)))) || (!((_local2 as AvatarEffect).autoRecover)))) || (!((_local2 as AvatarEffect).autoDispose)))) || ((_local2 as Object).stageIntersects))) {
-							_local13 = false;
+			var clearArray:Array = [];
+			var displayQueue:Array = [$middleLayer, $itemLayer, $bottomLayer, $topLayer];
+			i = 0;
+			while (i < displayQueue.length) {
+				charx = displayQueue[i];
+				char = charx;
+				j = 0;
+				while (j < charx.numChildren) {
+					if (char as IAvatar && char != mainChar && eff.name != "tile") {
+						ok = true;
+						if ((char as AvatarEffect) && (char as AvatarEffect).isLockDispose == false || !(char as AvatarEffect).autoRecover || !(char as AvatarEffect).autoDispose || (char as Object).stageIntersects) {
+							ok = false;
 						}
-						if (_local13) {
-							IAvatar(_local2).dispose();
+						if (ok) {
+							IAvatar(char).dispose();
 						}
 					}
-					_local11++;
+					j++;
 				}
-				_local9++;
+				i++;
 			}
+			
 			instanceHash = new Hash();
 			this.addItem(mainChar, mainChar.layer);
 			mainChar.showHeadShapAndShadowShape();
-			var _local15:Array = [];
-			var _local3:Hash = AvatarUnitDisplay.instanceHash;
-			for each (var _local14:IAvatar in _local3) {
-				_local4 = (_local14 as Char);
-				if (_local14 != mainChar) {
-					_local8 = (_local14 as AvatarEffect);
-					if (_local8) {
-						if (((_local8.autoRecover) && (!((_local8.name == "tile"))))) {
-							_local3.remove(_local14.id);
-							_local14.dispose();
+			var reload:Array = [];
+			var hash:Hash = AvatarUnitDisplay.instanceHash;
+			for each (var tar:IAvatar in hash) {
+				charx = tar as Char;
+				if (tar != mainChar) {
+					eff = tar as AvatarEffect;
+					if (eff) {
+						if (eff.autoRecover && eff.name != "tile") {
+							hash.remove(tar.id);
+							tar.dispose();
 						} else {
-							_local15.push(_local14);
+							reload.push(tar);
 						}
 					} else {
-						if (((_local4) && (((((!(_local4.proto)) || (_local4.isDisposed))) || ((_local4.stageIntersects == false)))))) {
-							_local3.remove(_local14.id);
-							_local14.dispose();
+						if (charx && (!charx.proto || charx.isDisposed || charx.stageIntersects == false)) {
+							hash.remove(tar.id);
+							tar.dispose();
 						} else {
-							_local15.push(_local14);
+							reload.push(tar);
 						}
 					}
 				}
 			}
+			
 			AvatarRequestElisor.getInstance().clear();
 			WealthElisor.isClearing = false;
-			_local7 = 0;
-			while (_local7 < _local15.length) {
-				_local1 = _local15[_local7];
-				if ((_local1 as Object).unit) {
-					if ((_local1 as AvatarEffect)) {
-						AvatarEffect(_local1).unit.reloadEffectHash();
+			k = 0;
+			while (k < reload.length) {
+				tar2 = reload[k];
+				if ((tar2 as Object).unit) {
+					if (tar2 as AvatarEffect) {
+						AvatarEffect(tar2).unit.reloadEffectHash();
 					} else {
-						_local6 = (_local1 as Avatar);
-						if (((_local6) && (_local6.stageIntersects))) {
-							_local6.unit.loadActSWF();
-							_local6.unit.reloadEffectHash();
+						avatar = tar2 as Avatar;
+						if (avatar && avatar.stageIntersects) {
+							avatar.unit.loadActSWF();
+							avatar.unit.reloadEffectHash();
 						}
-						_local5 = (_local1 as AvatarUnitDisplay);
-						if (((_local5) && (_local5.stageIntersects))) {
-							_local5.unit.loadActSWF();
-							_local5.unit.reloadEffectHash();
+						display = tar2 as AvatarUnitDisplay;
+						if (display && display.stageIntersects) {
+							display.unit.loadActSWF();
+							display.unit.reloadEffectHash();
 						}
 					}
 				}
-				_local7++;
+				k++;
 			}
-			_local15 = null;
+			reload = null;
 			AvatarRequestElisor.stop = false;
 		}
 		
@@ -845,35 +845,33 @@
 			if (!isReady) {
 				return;
 			}
-			var p:* = TileUtils.pixelsToTile(mainChar.x, mainChar.y);
-			var key:* = p.x + "|" + p.y;
-			var tile:* = TileGroup.instance.take(key) as Tile;
-			if (((!(tile)) || ((tile.type <= 0)))) {
-				var levelFunc = function (_arg1:int):void{
+			var p:Point = TileUtils.pixelsToTile(mainChar.x, mainChar.y);
+			var key:String = p.x + "|" + p.y;
+			var tile:Tile = TileGroup.instance.take(key) as Tile;
+			if (!tile || tile.type <= 0) {
+				var levelFunc:Function = function (_arg1:int):void{
 					if (paths.length) {
 						TileUtils.loop_break = true;
 					}
 				}
-				var loopFunc = function (_arg1:int, _arg2:int):void{
-					var _local4 = null;
-					var _local3:int;
-					var _local5:Tile = (TileGroup.instance.take(((_arg1 + "|") + _arg2)) as Tile);
-					if (_local5) {
-						_local4 = TileUtils.tileToPixels(new Point(_arg1, _arg2));
-						_local3 = LinearUtils.getDirection(mainChar.x, mainChar.y, _local4.x, _local4.y);
-						if (_local3 == mainChar.dir) {
-							_local3 = 0;
+				var loopFunc:Function = function (t_x:int, t_y:int):void{
+					var tile2:Tile = TileGroup.instance.take(t_x + "|" + t_y) as Tile;
+					if (tile2) {
+						var p2:Point = TileUtils.tileToPixels(new Point(t_x, t_y));
+						var dir:int = LinearUtils.getDirection(mainChar.x, mainChar.y, p2.x, p2.y);
+						if (dir == mainChar.dir) {
+							dir = 0;
 						}
 						paths.push({
-							dis:Point.distance(_local4, p),
-							p:_local4,
-							dir:_local3
+							dis:Point.distance(p2, p),
+							p:p2,
+							dir:dir
 						});
 					}
 				}
-				var paths:* = [];
+				var paths:Array = [];
 				TileUtils.loopRect(p.x, p.y, 10, 0, loopFunc, levelFunc);
-				paths.sortOn(["dis", "dir"], [16, 16]);
+				paths.sortOn(["dis", "dir"], [Array.NUMERIC, Array.NUMERIC]);
 				if (paths.length) {
 					mainChar.setTileXY(paths[0].p.x, paths[0].p.y);
 				}
@@ -906,137 +904,137 @@
 		
 		protected function uniformSpeedMove(cur_point:Point, tar_point:Point):void
 		{
-			var _local5 = null;
-			var _local4:Number = Point.distance(tar_point, cur_point);
-			var _local3 = 1;
-			var _local6 = 1;
-			while (_local6 <= _local3) {
-				_local5 = Point.interpolate(tar_point, cur_point, (_local6 * (1 / _local3)));
-				Point.interpolate(tar_point, cur_point, (_local6 * (1 / _local3))).x = _local5.x.toFixed(2);
-				_local5.y = _local5.y.toFixed(2);
-				this.mapLayer.x = _local5.x;
-				this.mapLayer.y = _local5.y;
-				this.x = _local5.x;
-				this.y = _local5.y;
-				_local6++;
+			var dis:Number = Point.distance(tar_point, cur_point);
+			var p:Point = null;
+			var count:int = 1;
+			var i:int = 1;
+			while (i <= count) {
+				p = Point.interpolate(tar_point, cur_point, (i * (1 / count)));
+				Point.interpolate(tar_point, cur_point, (i * (1 / count))).x = (p.x.toFixed(2) as Number);
+				p.y = p.y.toFixed(2) as Number;
+				this.mapLayer.x = p.x;
+				this.mapLayer.y = p.y;
+				this.x = p.x;
+				this.y = p.y;
+				i++;
 			}
 		}
 		
 		public function getCameraFocusTo(px:Number, py:Number):Point
 		{
-			var _local8:Number;
-			var _local7:Number;
-			var _local6:int = Engine.stage.stageWidth;
-			var _local10:int = Engine.stage.stageHeight;
-			var _local5 = 8000;
-			var _local4 = 8000;
-			if (((((this.mapData) && ((this.mapData.pixel_width > 0)))) && ((this.mapData.pixel_height > 0)))) {
-				_local5 = this.mapData.pixel_width;
-				_local4 = this.mapData.pixel_height;
+			var vx:Number;
+			var vy:Number;
+			var w:int = Engine.stage.stageWidth;
+			var h:int = Engine.stage.stageHeight;
+			var w_:int = 8000;
+			var h_:int = 8000;
+			if (this.mapData && this.mapData.pixel_width > 0 && this.mapData.pixel_height > 0) {
+				w_ = this.mapData.pixel_width;
+				h_ = this.mapData.pixel_height;
 			}
-			var _local3:Number = (_local6 / 2);
-			var _local9:Number = (_local10 / 2);
-			if ((((_local5 < _local6)) || ((((px >= _local3)) && ((px <= (_local5 - _local3))))))) {
-				_local8 = (_local3 - px);
+			var vw:Number = w / 2;
+			var vh:Number = h / 2;
+			if (w_ < w || (px >= vw && px <= (w_ - vw))) {
+				vx = vw - px;
 			} else {
-				if (px <= _local3) {
-					_local8 = 0;
+				if (px <= vw) {
+					vx = 0;
 				} else {
-					_local8 = (_local6 - _local5);
+					vx = (w - w_);
 				}
 			}
-			if ((((_local4 < _local10)) || ((((py >= _local9)) && ((py <= (_local4 - _local9))))))) {
-				_local7 = (_local9 - py);
+			if (h_ < h || (py >= vh && py <= (h_ - vh))) {
+				vy = vh - py;
 			} else {
-				if (py <= _local9) {
-					_local7 = 0;
+				if (py <= vh) {
+					vy = 0;
 				} else {
-					_local7 = (_local10 - _local4);
+					vy = (h - h_);
 				}
 			}
-			return (new Point(_local8, _local7));
+			return new Point(vx, vy);
 		}
 		
 		public function getCameraFocusPoint(px:Number, py:Number):Point
 		{
-			var _local18:Number;
-			var _local17:Number;
-			var _local15:int = Engine.stage.stageWidth;
-			var _local11:int = Engine.stage.stageHeight;
-			var _local16 = 10000;
-			var _local3 = 10000;
-			if (((((this.mapData) && ((this.mapData.pixel_width > 0)))) && ((this.mapData.pixel_height > 0)))) {
-				_local16 = this.mapData.pixel_width;
-				_local3 = this.mapData.pixel_height;
+			var vw:Number;
+			var vh:Number;
+			var w:int = Engine.stage.stageWidth;
+			var h:int = Engine.stage.stageHeight;
+			var w_:int = 10000;
+			var h_:int = 10000;
+			if (this.mapData && this.mapData.pixel_width > 0 && this.mapData.pixel_height > 0) {
+				w_ = this.mapData.pixel_width;
+				h_ = this.mapData.pixel_height;
 			}
-			var _local12:int;
-			var _local21:Point = new Point();
-			_local21.x = px;
-			_local21.y = py;
-			var _local22:Point = this.localToGlobal(_local21);
-			var _local9:Number = (_local15 / 2);
-			var _local7:Number = (_local11 / 2);
-			var _local20:Point = this.localToGlobal(_local21);
-			_local21 = new Point();
-			_local21.x = _local9;
-			_local21.y = _local7;
-			var _local14:int = Point.distance(_local21, _local20);
-			var _local13 = _local12;
-			var _local4:Number = scaleX;
-			var _local6:Number = (_local20.x - _local9);
-			var _local8:Number = (_local20.y - _local7);
-			var _local10:Number = Math.atan2(_local8, _local6).toFixed(2) as Number;
-			_local20.x = ((_local9 + ((Math.cos(_local10) * _local12) * _local4)).toFixed(1) + "2") as Number;
-			_local20.y = ((_local7 + ((Math.sin(_local10) * _local12) * _local4)).toFixed(1) + "2") as Number;
-			var _local5:Number = (_local15 - _local16);
-			var _local19:Number = (_local11 - _local3);
-			if ((((px >= (_local9 + _local12))) && ((px <= ((_local16 - _local9) - _local12))))) {
-				if (_local14 >= (_local13 * _local4)) {
-					_local18 = (_local20.x - px);
-					if (_local18 > 0) {
-						_local18 = 0;
+			var size:int;
+			var pt:Point = new Point();
+			pt.x = px;
+			pt.y = py;
+			var char_p:Point = this.localToGlobal(pt);
+			var focus_x:Number = (w / 2);
+			var focus_y:Number = (h / 2);
+			var p:Point = this.localToGlobal(pt);
+			pt = new Point();
+			pt.x = focus_x;
+			pt.y = focus_y;
+			var dis2:int = Point.distance(pt, p);
+			var dis_:int = size;
+			var scale:Number = scaleX;
+			var dx:Number = (p.x - focus_x);
+			var dy:Number = (p.y - focus_y);
+			var angle:Number = Math.atan2(dy, dx).toFixed(2) as Number;
+			p.x = ((focus_x + ((Math.cos(angle) * size) * scale)).toFixed(1) + "2") as Number;
+			p.y = ((focus_y + ((Math.sin(angle) * size) * scale)).toFixed(1) + "2") as Number;
+			var dw:Number = (w - w_);
+			var dh:Number = (h - h_);
+			if (px >= (focus_x + size) && px <= ((w_ - focus_x) - size)) {
+				if (dis2 >= (dis_ * scale)) {
+					vw = (p.x - px);
+					if (vw > 0) {
+						vw = 0;
 					}
-					if (_local18 < _local5) {
-						_local18 = _local5;
+					if (vw < dw) {
+						vw = dw;
 					}
 				}
 			} else {
-				if (px <= (_local9 + _local12)) {
-					_local18 = (_local20.x - px);
-					if (_local18 > 0) {
-						_local18 = 0;
+				if (px <= (focus_x + size)) {
+					vw = (p.x - px);
+					if (vw > 0) {
+						vw = 0;
 					}
 				} else {
-					_local18 = (_local20.x - px);
-					if (_local18 < _local5) {
-						_local18 = _local5;
+					vw = (p.x - px);
+					if (vw < dw) {
+						vw = dw;
 					}
 				}
 			}
-			if ((((py >= (_local7 + _local12))) && ((py <= ((_local3 - _local7) - _local12))))) {
-				if (_local14 >= (_local13 * _local4)) {
-					_local17 = (_local20.y - py);
-					if (_local17 > 0) {
-						_local17 = 0;
+			if (py >= (focus_y + size) && py <= ((h_ - focus_y) - size)) {
+				if (dis2 >= (dis_ * scale)) {
+					vh = (p.y - py);
+					if (vh > 0) {
+						vh = 0;
 					}
-					if (_local17 < _local19) {
-						_local17 = _local19;
+					if (vh < dh) {
+						vh = dh;
 					}
 				}
 			} else {
-				if (py <= (_local7 + _local12)) {
-					_local17 = (_local20.y - py);
-					if (_local17 > 0) {
-						_local17 = 0;
+				if (py <= (focus_y + size)) {
+					vh = (p.y - py);
+					if (vh > 0) {
+						vh = 0;
 					}
 				} else {
-					_local17 = (_local20.y - py);
-					if (_local17 < _local19) {
-						_local17 = _local19;
+					vh = (p.y - py);
+					if (vh < dh) {
+						vh = dh;
 					}
 				}
 			}
-			return (new Point(_local18, _local17));
+			return new Point(vw, vh);
 		}
 
 	}
