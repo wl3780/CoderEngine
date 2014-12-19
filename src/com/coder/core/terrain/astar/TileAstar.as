@@ -45,7 +45,8 @@
 		private var closeLength:int;
 		public var mode:int = 1;
 
-		public static function loopRect(index_x:int, index_y:int, loopNum:uint, dic:Dictionary, type:int, indexPt:Point):Point{
+		public static function loopRect(index_x:int, index_y:int, loopNum:uint, dic:Dictionary, type:int, indexPt:Point):Point
+		{
 			var _local11:int;
 			var _local21:int;
 			var _local20:int;
@@ -503,7 +504,9 @@
 			}
 			return this.pathArray;
 		}
-		private function reSet():void{
+		
+		private function reSet():void
+		{
 			this.pathArray = [];
 			this.source = new Dictionary();
 			this.colsePath = new Dictionary();

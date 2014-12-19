@@ -506,157 +506,196 @@
 			}
 		}
 		
-		public function checkGridSame(key:String):Boolean{
-			var _local5:int;
-			var _local3 = null;
+		public function checkGridSame(key:String):Boolean
+		{
+			var i:int;
+			var char:Char = null;
 			var mainChar:MainChar = Scene.scene.mainChar;
-			var _local4:Array = Scene.scene.fine(point.x, point.y, 100);
-			_local5 = 0;
-			while (_local5 < _local4.length) {
-				_local3 = _local4[_local5];
-				if (((((((_local3) && ((((_local3.type == "char")) || ((_local3.type == "0npc_normal")))))) && (!((_local3 == mainChar))))) && (!((_local3 == this))))) {
-					if ((((((_local3.isDisposed == false)) && ((_local3.isDeath == false)))) && ((_local3.key == key)))) {
+			var arr:Array = Scene.scene.fine(point.x, point.y, 100);
+			i = 0;
+			while (i < arr.length) {
+				char = arr[i];
+				if (((((((char) && ((((char.type == "char")) || ((char.type == "0npc_normal")))))) && (!((char == mainChar))))) && (!((char == this))))) {
+					if ((((((char.isDisposed == false)) && ((char.isDeath == false)))) && ((char.key == key)))) {
 						return (true);
 					}
 				}
-				_local5++;
+				i++;
 			}
 			return (false);
 		}
-		public function checkCharInGrids(oldKey:String, newKey:String, enabled:Boolean, kill:Boolean=false):void{
-			var _local7 = null;
-			var _local6 = null;
-			var _local9:int;
-			var _local5 = null;
+		
+		public function checkCharInGrids(oldKey:String, newKey:String, enabled:Boolean, kill:Boolean=false):void
+		{
+			var p:Point = null;
+			var arr:Array = null;
+			var i:int;
+			var char:Char = null;
 		}
-		public function setBlock(oldKey:String, newKey:String, kill:Boolean=false):void{
-			var _local4 = null;
+		
+		public function setBlock(oldKey:String, newKey:String, kill:Boolean=false):void
+		{
+			var tile:Tile = null;
 			if (((Scene.scene.isBlockMode) && ((((type == "char")) || ((type == "0npc_normal")))))) {
-				_local4 = (TileGroup.instance.take(oldKey) as Tile);
-				if (((_local4) && (kill))) {
-					_local4.quoteIndex = 0;
-					_local4.type = _local4.initValue;
+				tile = (TileGroup.instance.take(oldKey) as Tile);
+				if (((tile) && (kill))) {
+					tile.quoteIndex = 0;
+					tile.type = tile.initValue;
 					return;
 				}
-				if (((((_local4) && ((((_local4.type == 0)) || (isDeath))))) && ((checkGridSame(oldKey) == false)))) {
-					_local4.quoteIndex = (_local4.quoteIndex - 1);
-					if (_local4.quoteIndex <= 0) {
-						_local4.quoteIndex = 0;
-						_local4.type = _local4.initValue;
+				if (((((tile) && ((((tile.type == 0)) || (isDeath))))) && ((checkGridSame(oldKey) == false)))) {
+					tile.quoteIndex = (tile.quoteIndex - 1);
+					if (tile.quoteIndex <= 0) {
+						tile.quoteIndex = 0;
+						tile.type = tile.initValue;
 					}
 				}
-				_local4 = (TileGroup.instance.take(newKey) as Tile);
+				tile = (TileGroup.instance.take(newKey) as Tile);
 				if ((((_isMainChar_ == false)) && (!(isDeath)))) {
-					if (((_local4) && ((_local4.type > 0)))) {
-						_local4.quoteIndex = (_local4.quoteIndex + 1);
-						_local4.type = 0;
+					if (((tile) && ((tile.type > 0)))) {
+						tile.quoteIndex = (tile.quoteIndex + 1);
+						tile.type = 0;
 					}
 				} else {
-					if (((((_local4) && ((((_local4.type <= 0)) || (!(isDeath)))))) && ((checkGridSame(newKey) == false)))) {
-						_local4.quoteIndex = 0;
-						_local4.type = _local4.initValue;
+					if (((((tile) && ((((tile.type <= 0)) || (!(isDeath)))))) && ((checkGridSame(newKey) == false)))) {
+						tile.quoteIndex = 0;
+						tile.type = tile.initValue;
 					}
 				}
 			}
 		}
-		public function get isPoisoning():Boolean{
+		
+		public function get isPoisoning():Boolean
+		{
 			return (_isPoisoning);
 		}
-		public function setPoisoning(value:Boolean):void{
-			var _local4:int;
-			var _local3 = null;
+		
+		public function setPoisoning(value:Boolean):void
+		{
+			var i:int;
+			var tar:AvatarUnitDisplay = null;
 			_isPoisoning = value;
-			var _local2:Array = [];
+			var arr:Array = [];
 			if (this.bmd_mid) {
-				_local2.push(bmd_mid);
+				arr.push(bmd_mid);
 			}
-			_local4 = 0;
-			while (_local4 < _local2.length) {
-				_local3 = _local2[_local4];
-				_local3.transform.colorTransform = (value) ? POISONING_COLOR : DEFAULT_COLOR;
-				_local4++;
+			i = 0;
+			while (i < arr.length) {
+				tar = arr[i];
+				tar.transform.colorTransform = (value) ? POISONING_COLOR : DEFAULT_COLOR;
+				i++;
 			}
 		}
-		public function get isStealth():Boolean{
+		
+		public function get isStealth():Boolean
+		{
 			return (_isStealth);
 		}
-		public function set isStealth(value:Boolean):void{
+		public function set isStealth(value:Boolean):void
+		{
 			_isStealth = value;
 			enterFrameCheck = true;
 		}
+		
 		override public function set y(value:Number):void{
-			var _local3:String = _key_;
+			var orgKey:String = _key_;
 			super.y = value;
 			enterFrameCheck = true;
 			_key_ = getKey();
-			var _local2:String = _key_;
-			setBlock(_local3, _local2);
+			var newKey:String = _key_;
+			setBlock(orgKey, newKey);
 			if (_isMainChar_) {
 				Scene.isDepthChange = true;
 			}
 		}
-		public function get point():Point{
-			var _local2:int = (((x / TileConst.TILE_WIDTH) * TileConst.TILE_WIDTH) + TileConst.WH);
-			var _local1:int = (((y / TileConst.TILE_HEIGHT) * TileConst.TILE_HEIGHT) + TileConst.HH);
+		
+		public function get point():Point
+		{
+			var tx:int = (((x / TileConst.TILE_WIDTH) * TileConst.TILE_WIDTH) + TileConst.WH);
+			var ty:int = (((y / TileConst.TILE_HEIGHT) * TileConst.TILE_HEIGHT) + TileConst.HH);
 			_point_ = Engine.getPoint();
-			_point_.x = _local2;
-			_point_.y = _local1;
+			_point_.x = tx;
+			_point_.y = ty;
 			return (_point_);
 		}
-		public function setXY(x:Number, y:Number):void{
-			var _local4:String = _key_;
-			super.y = y;
+		
+		public function setXY(x:Number, y:Number):void
+		{
+			var oldKey:String = _key_;
 			super.x = x;
-			var _local3:String = _key_;
-			setBlock(_local4, _local3);
+			super.y = y;
+			var newKey:String = _key_;
+			setBlock(oldKey, newKey);
 			enterFrameCheck = true;
 		}
-		public function setTileXY(x:Number, y:Number):void{
+		
+		public function setTileXY(x:Number, y:Number):void
+		{
 			TileUtils.pixelsAlginTile(x, y, RecoverUtils.point);
 			setXY(RecoverUtils.point.x, RecoverUtils.point.y);
 		}
-		public function get scene_id():String{
+		
+		public function get scene_id():String
+		{
 			return (_scene_id);
 		}
-		public function set scene_id(value:String):void{
+		public function set scene_id(value:String):void
+		{
 			_scene_id = value;
 		}
-		public function set isRuning(value:Boolean):void{
+		
+		public function set isRuning(value:Boolean):void
+		{
 			_isRuning_ = value;
 		}
-		public function get isRuning():Boolean{
+		public function get isRuning():Boolean
+		{
 			return (_isRuning_);
 		}
-		public function get layer():String{
+		
+		public function get layer():String
+		{
 			return (_layer_);
 		}
-		public function set layer(value:String):void{
+		public function set layer(value:String):void
+		{
 			_layer_ = value;
 		}
-		public function set char_id(value:String):void{
+		
+		public function set char_id(value:String):void
+		{
 			if (headShape) {
 				headShape.char_id = value;
 			}
 			_char_id_ = value;
 		}
-		public function get char_id():String{
+		public function get char_id():String
+		{
 			return (_char_id_);
 		}
-		public function get speed():Number{
+		
+		public function get speed():Number
+		{
 			return (_speed_);
 		}
-		public function set speed(value:Number):void{
+		public function set speed(value:Number):void
+		{
 			this.runSpeed = value;
 			this.walkSpeed = (value / 2);
 			_speed_ = value;
 		}
-		public function get moveEndFunc():Function{
+		
+		public function get moveEndFunc():Function
+		{
 			return (_moveEndFunc_);
 		}
-		public function set moveEndFunc(value:Function):void{
+		public function set moveEndFunc(value:Function):void
+		{
 			_moveEndFunc_ = value;
 		}
-		public function addHeadImage(headImage:HeadImage):void{
+		
+		public function addHeadImage(headImage:HeadImage):void
+		{
 			if (FPSUtils.fps < 10) {
 				headImage.dispose();
 				return;
@@ -676,7 +715,9 @@
 				Scene.scene.topLayer.addChild(headImageSprite);
 			}
 		}
-		public function moveTo(x:int, y:int):void{
+		
+		public function moveTo(x:int, y:int):void
+		{
 			clearTimeout(hoeTimeIndex);
 			_tarPoint_.x = x;
 			_tarPoint_.y = y;
@@ -706,44 +747,64 @@
 			}
 			unit.loadActSWF();
 		}
-		public function getKey():String{
+		
+		public function getKey():String
+		{
 			var _local2:int = (x / TileConst.TILE_WIDTH);
 			var _local1:int = (y / TileConst.TILE_HEIGHT);
 			return (((_local2 + "|") + _local1));
 		}
-		public function get key():String{
+		
+		public function get key():String
+		{
 			return (_key_);
 		}
-		public function get tilePoint():Point{
-			var _local2:int = (x / TileConst.TILE_WIDTH);
-			var _local1:int = (y / TileConst.TILE_HEIGHT);
-			return (new Point(_local2, _local1));
+		
+		public function get tilePoint():Point
+		{
+			var tx:int = (x / TileConst.TILE_WIDTH);
+			var ty:int = (y / TileConst.TILE_HEIGHT);
+			return (new Point(tx, ty));
 		}
-		public function pixelsAlginTile():void{
+		
+		public function pixelsAlginTile():void
+		{
 			this.x = (((x / TileConst.TILE_WIDTH) * TileConst.TILE_WIDTH) + TileConst.WH);
 			this.y = (((y / TileConst.TILE_HEIGHT) * TileConst.TILE_HEIGHT) + TileConst.HH);
 		}
-		public function distanceTo(tarPoint:Point):Number{
+		
+		public function distanceTo(tarPoint:Point):Number
+		{
 			return (Point.distance(this.point, tarPoint));
 		}
-		public function moveToTile(index_x:int, index_y:int):void{
-			var _local3:Point = new Point(index_x, index_y);
-			TileUtils.tileToPixels(_local3, _local3);
-			moveTo(_local3.x, _local3.y);
+		
+		public function moveToTile(index_x:int, index_y:int):void
+		{
+			var p:Point = new Point(index_x, index_y);
+			TileUtils.tileToPixels(p, p);
+			moveTo(p.x, p.y);
 		}
-		public function setEffectStopFrame(actionData_id:String, frame:int):void{
+		
+		public function setEffectStopFrame(actionData_id:String, frame:int):void
+		{
 			this.unit.setEffectStopFrame(actionData_id, frame);
 		}
-		public function faceTo(char:ISceneItem):void{
+		
+		public function faceTo(char:ISceneItem):void
+		{
 			if (((char) && (!(char.isDisposed)))) {
 				this.dir = getDretion(point.x, point.y, Object(char).point.x, Object(char).point.y);
 			}
 		}
-		public function faceToPoint(tar_x:Number, tar_y:Number):void{
-			var _local3:Point = TileUtils.pixelsAlginTile(tar_x, tar_y);
-			this.dir = getDretion(point.x, point.y, _local3.x, _local3.y);
+		
+		public function faceToPoint(tar_x:Number, tar_y:Number):void
+		{
+			var p:Point = TileUtils.pixelsAlginTile(tar_x, tar_y);
+			this.dir = getDretion(point.x, point.y, p.x, p.y);
 		}
-		public function removeEffect(idName:String, layer:String, passKey:String=null):void{
+		
+		public function removeEffect(idName:String, layer:String, passKey:String=null):void
+		{
 			if (unit) {
 				unit.removeEffect(idName, layer, passKey);
 			}
@@ -1026,15 +1087,15 @@
 		
 		override public function dispose():void
 		{
-			var _local4:int;
-			var _local2 = null;
-			var _local3 = null;
+			var i:int;
+			var headImage:HeadImage = null;
+			var image:HeadImage = null;
 			if (_isDisposed_) {
 				return;
 			}
-			var _local1:int = Scene.scene.tarHash.indexOf(this);
-			if (_local1 != -1) {
-				Scene.scene.tarHash.splice(_local1, 1);
+			var index:int = Scene.scene.tarHash.indexOf(this);
+			if (index != -1) {
+				Scene.scene.tarHash.splice(index, 1);
 			}
 			actionCounter = 0;
 			dirCounter = 0;
@@ -1055,16 +1116,16 @@
 			shadow_id = null;
 			tileKey = null;
 			lock = false;
-			_local4 = 0;
-			while (_local4 < imageQueue.length) {
-				_local2 = imageQueue[_local4];
-				if (_local2) {
-					if (_local2.parent) {
-						_local2.parent.removeChild(_local2);
+			i = 0;
+			while (i < imageQueue.length) {
+				headImage = imageQueue[i];
+				if (headImage) {
+					if (headImage.parent) {
+						headImage.parent.removeChild(headImage);
 					}
-					_local2.dispose();
+					headImage.dispose();
 				}
-				_local4++;
+				i++;
 			}
 			imageQueue = [];
 			words = [];
@@ -1120,9 +1181,9 @@
 			headShape = null;
 			if (headImageSprite) {
 				while (headImageSprite.numChildren) {
-					_local3 = (headImageSprite.removeChildAt((headImageSprite.numChildren - 1)) as HeadImage);
-					if (_local3) {
-						_local3.dispose();
+					image = (headImageSprite.removeChildAt((headImageSprite.numChildren - 1)) as HeadImage);
+					if (image) {
+						image.dispose();
 					}
 				}
 			}
@@ -1156,8 +1217,8 @@
 				_CharMoveEnd_();
 				return;
 			}
-			var _local2:int = Point.distance(_tarPoint_, new Point(x, y));
-			if ((((_local2 <= TileConst.WH)) && ((value.length == 0)))) {
+			var dis:int = Point.distance(_tarPoint_, new Point(x, y));
+			if ((((dis <= TileConst.WH)) && ((value.length == 0)))) {
 				_CharMoveEnd_();
 				return;
 			}
@@ -1203,24 +1264,24 @@
 		
 		private function updateWalkMode():void
 		{
-			var _local1:int;
-			var _local3:Point = point;
-			var _local4:Point = TileUtils.pixelsAlginTile(_tarPoint_.x, _tarPoint_.y);
-			var _local2:int = Point.distance(_local3, _local4);
+			var gridSize:int;
+			var point1:Point = point;
+			var point2:Point = TileUtils.pixelsAlginTile(_tarPoint_.x, _tarPoint_.y);
+			var pointDis:int = Point.distance(point1, point2);
 			if ((((dir == 0)) || ((dir == 4)))) {
-				_local1 = TileConst.TILE_HEIGHT;
+				gridSize = TileConst.TILE_HEIGHT;
 			} else {
 				if ((((((((dir == 1)) || ((dir == 3)))) || ((dir == 5)))) || ((dir == 7)))) {
 					if (((((proto) && (proto.hasOwnProperty("owner_char")))) && ((proto.owner_char > 0)))) {
-						_local1 = TileConst.TILE_WIDTH;
+						gridSize = TileConst.TILE_WIDTH;
 					} else {
-						_local1 = (TileConst.Tile_XIE + 8);
+						gridSize = (TileConst.Tile_XIE + 8);
 					}
 				} else {
-					_local1 = TileConst.TILE_WIDTH;
+					gridSize = TileConst.TILE_WIDTH;
 				}
 			}
-			if (_local2 > _local1) {
+			if (pointDis > gridSize) {
 				if (isWalkMode) {
 					isWalkMode = false;
 				}
@@ -1279,10 +1340,10 @@
 		}
 		
 		public function loop():void{
-			var _local2:int;
-			var _local4:int;
-			var _local1 = null;
-			var _local3 = null;
+			var n:int;
+			var i:int;
+			var headImage:HeadImage = null;
+			var image:HeadImage = null;
 			if (shadowShape) {
 				shadowShape.y = (y + 5);
 				shadowShape.x = x;
@@ -1306,28 +1367,28 @@
 			checkTimeIndex = getTimer();
 			if (((imageQueue.length) && (((getTimer() - imageDur) > 80)))) {
 				imageDur = getTimer();
-				_local2 = 1;
+				n = 1;
 				if (FPSUtils.fps < 5) {
-					_local2 = imageQueue.length;
+					n = imageQueue.length;
 				}
-				_local4 = 0;
-				while (_local4 < _local2) {
-					_local1 = imageQueue.shift();
-					_local1.startPlay();
+				i = 0;
+				while (i < n) {
+					headImage = imageQueue.shift();
+					headImage.startPlay();
 					if (headImageSprite) {
-						this.headImageSprite.addChild(_local1);
+						this.headImageSprite.addChild(headImage);
 					}
 					if (((((((headImageSprite) && ((headImageSprite.parent == null)))) && (!(this.isDisposed)))) && (this.parent))) {
 						Scene.scene.topLayer.addChild(headImageSprite);
 					}
-					_local4++;
+					i++;
 				}
 			}
 			if (((((((headImageSprite) && (headImageSprite.parent))) && ((headImageSprite.numChildren == 0)))) && ((imageQueue.length == 0)))) {
 				while (headImageSprite.numChildren) {
-					_local3 = (headImageSprite.removeChildAt((headImageSprite.numChildren - 1)) as HeadImage);
-					if (_local3) {
-						_local3.dispose();
+					image = (headImageSprite.removeChildAt((headImageSprite.numChildren - 1)) as HeadImage);
+					if (image) {
+						image.dispose();
 					}
 				}
 				headImageSprite.parent.removeChild(headImageSprite);
@@ -1474,13 +1535,13 @@
 		
 		public function _tarMove_():void
 		{
-			var _local9:Number;
-			var _local7:Number;
-			var _local4 = null;
-			var _local6 = null;
-			var _local3 = null;
-			var _local10:int;
-			var _local5:int;
+			var vs:Number;
+			var vd:Number;
+			var p:Point = null;
+			var pt:Point = null;
+			var tile:Tile = null;
+			var dp:int;
+			var n:int;
 			if (((_stopMove_) || (!(Scene.scene.isReady)))) {
 				return;
 			}
@@ -1491,43 +1552,43 @@
 				}
 				return;
 			}
-			var _local8:int = _speed_;
+			var speed_:int = _speed_;
 			tmpPt.x = x;
 			tmpPt.y = y;
-			var _local2:Number = Point.distance(tmpPt, _tarPoint_);
-			var _local1:int = ((_local2 / _local8) * 1000);
-			if (_totalTime_ >= _local1) {
-				_totalTime_ = (_totalTime_ - _local1);
+			var dis:Number = Point.distance(tmpPt, _tarPoint_);
+			var time:int = ((dis / speed_) * 1000);
+			if (_totalTime_ >= time) {
+				_totalTime_ = (_totalTime_ - time);
 			} else {
-				_local1 = _totalTime_;
+				time = _totalTime_;
 				_totalTime_ = 0;
 			}
-			if (_local1 > 0) {
-				_local9 = ((_local8 * _local1) / 1000);
-				_local7 = (_local9 / _local2);
-				_local4 = Point.interpolate(_tarPoint_, tmpPt, _local7);
+			if (time > 0) {
+				vs = ((speed_ * time) / 1000);
+				vd = (vs / dis);
+				p = Point.interpolate(_tarPoint_, tmpPt, vd);
 				if (((((Scene.scene.stage) && (Scene.scene.isBlockMode))) && (_isMainChar_))) {
-					_local6 = TileUtils.pixelsToTile(_local4.x, _local4.y);
-					_local3 = (TileGroup.instance.take(((_local6.x + "|") + _local6.y)) as Tile);
-					_local10 = Point.distance(TileUtils.tileToPixels(_local6), new Point(x, y));
-					if (((((((_local3) && ((_local3.type <= 0)))) && ((_local10 <= 5)))) && (!((((_local6.x + "|") + _local6.y) == key))))) {
+					pt = TileUtils.pixelsToTile(p.x, p.y);
+					tile = (TileGroup.instance.take(((pt.x + "|") + pt.y)) as Tile);
+					dp = Point.distance(TileUtils.tileToPixels(pt), new Point(x, y));
+					if (((((((tile) && ((tile.type <= 0)))) && ((dp <= 5)))) && (!((((pt.x + "|") + pt.y) == key))))) {
 						_CharMoveEnd_();
 						return;
 					}
 				}
 				if (isMainChar) {
-					this.x = _local4.x.toFixed(2);
-					this.y = _local4.y.toFixed(2);
+					this.x = p.x.toFixed(2) as Number;
+					this.y = p.y.toFixed(2) as Number;
 				} else {
-					this.x = _local4.x;
-					this.y = _local4.y;
+					this.x = p.x;
+					this.y = p.y;
 				}
 				tmpPt.x = x;
 				tmpPt.y = y;
 				if (!_tarPoint_) {
 					return;
 				}
-				_local2 = Point.distance(tmpPt, _tarPoint_);
+				dis = Point.distance(tmpPt, _tarPoint_);
 				if (((isCharMode) && ((isNeedChanegSpeed == false)))) {
 					checkActDur = getTimer();
 					if ((((this.dir == 0)) || ((this.dir == 4)))) {
@@ -1545,7 +1606,7 @@
 					}
 				}
 			}
-			if (_local2 <= 0.5) {
+			if (dis <= 0.5) {
 				x = _tarPoint_.x;
 				y = _tarPoint_.y;
 				_totalTime_ = 0;
@@ -1553,11 +1614,11 @@
 					_tarPoint_ = _movePath_.shift();
 					if (((!(isLoopMove)) || ((_movePath_.length >= 0)))) {
 						updateWalkMode();
-						_local5 = 15;
+						n = 15;
 						if ((((_movePath_.length == 0)) && (!(isLoopMove)))) {
-							_local5 = 5;
+							n = 5;
 						}
-						if (Point.distance(new Point(this.x, this.y), _tarPoint_) >= _local5) {
+						if (Point.distance(new Point(this.x, this.y), _tarPoint_) >= n) {
 							if (TileUtils.pixelsToTile(x, y).toString() != TileUtils.pixelsAlginTile(_tarPoint_.x, _tarPoint_.y).toString()) {
 								this.dir = LinearUtils.getCharDir(this.x, this.y, _tarPoint_.x, _tarPoint_.y);
 							}

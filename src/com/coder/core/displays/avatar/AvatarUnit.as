@@ -11,6 +11,7 @@
 	import com.coder.utils.Hash;
 	import com.coder.utils.log.Log;
 	
+	import flash.display.BitmapData;
 	import flash.system.Capabilities;
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
@@ -164,45 +165,45 @@
 		
 		public function onBodyRender(renderType:int=0):void
 		{
-			var _local22 = null;
-			var _local18:int;
-			var _local17:int;
-			var _local13:int;
-			var _local5:int;
-			var _local19:int;
-			var _local4:int;
-			var _local21 = null;
-			var _local20:Boolean;
-			var _local14 = null;
-			var _local9 = null;
-			var _local24 = null;
-			var _local8 = null;
-			var _local12:int;
-			var _local16:int;
-			var _local23 = null;
-			var _local15 = null;
-			var _local11:int;
-			var _local10:int;
-			var _local2:int;
-			var _local6 = null;
-			var _local3 = null;
-			var _local7 = null;
+			var owner:IAvatar = null;
+			var durt:int;
+			var t:int;
+			var num:int;
+			var fps:int;
+			var durTime:int;
+			var passTime:int;
+			var actionData:AvatarActionData = null;
+			var hasRender:Boolean;
+			var shadowShap:AvatarUnitDisplay = null;
+			var actionData_shadow:AvatarActionData = null;
+			var group:AvatarDataFormatGroup = null;
+			var bitmapData_shadow:BitmapData = null;
+			var tx_shadow:int;
+			var ty_shadow:int;
+			var type_shadow:String = null;
+			var bitmapData:BitmapData = null;
+			var tx:int;
+			var ty:int;
+			var cSex:int;
+			var actionDataBase:AvatarActionData = null;
+			var groupBase:AvatarDataFormatGroup = null;
+			var type:String = null;
 			if (_isDisposed_) {
 				return;
 			}
 			if (((((((mainActionData) && (mainActionData.isReady))) && (!(this.stopPlay)))) || (((EngineGlobal.shadowAvatarGroup) && (mainActionData))))) {
-				_local22 = AvatarUnitDisplay.takeUnitDisplay(this.oid);
-				if (((_local22) && ((_local22.name == "showad")))) {
+				owner = AvatarUnitDisplay.takeUnitDisplay(this.oid);
+				if (((owner) && ((owner.name == "showad")))) {
 					return;
 				}
-				if (!_local22) {
+				if (!owner) {
 					return;
 				}
 				_totalFrames_ = mainActionData.totalFrames;
 				if (_currFrame_ >= _totalFrames_) {
 					try {
-						_local18 = mainActionData.getDataFromat(_actNow_).intervalTimes[(currFrame - 1)];
-						if ((getTimer() - _bodyOverTime_) < _local18) {
+						durt = mainActionData.getDataFromat(_actNow_).intervalTimes[(currFrame - 1)];
+						if ((getTimer() - _bodyOverTime_) < durt) {
 							return;
 						}
 					} catch(e:Error) {
@@ -217,9 +218,9 @@
 						}
 					} else {
 						if ((((_actNow_ == "death")) || (!((mainActionData.stopFrame == -1))))) {
-							var _local27 = (totalFrames - 1);
-							mainActionData.stopFrame = _local27;
-							_currFrame_ = _local27;
+							var tmpFrame:int = (totalFrames - 1);
+							mainActionData.stopFrame = tmpFrame;
+							_currFrame_ = tmpFrame;
 						} else {
 							_currFrame_ = ((mainActionData.stopFrame)!=-1) ? mainActionData.stopFrame : 0;
 							if (isLoopAct(_actNow_)) {
@@ -229,7 +230,7 @@
 										this.play(_actNext_, PLAY_NEXT_RENDER);
 										return;
 									}
-									_local22.playEnd(_actNow_);
+									owner.playEnd(_actNow_);
 									_actPrve_ = _actNow_;
 									this.play(_actNext_, PLAY_NEXT_RENDER);
 								}
@@ -239,15 +240,15 @@
 								}
 								_actPrve_ = _actNow_;
 								if (((!((_actNow_ == "attack"))) && (!((_actNow_ == "skill"))))) {
-									_local22.playEnd(_actNow_);
+									owner.playEnd(_actNow_);
 								}
 								if ((((_actNow_ == "attack")) || ((_actNow_ == "skill")))) {
 									if (!isCharMode) {
-										_local22.play("stand", PLAY_NEXT_RENDER);
+										owner.play("stand", PLAY_NEXT_RENDER);
 										_actNext_ = "stand";
 									} else {
 										if (Capabilities.playerType != "Desktop") {
-											_local22.play("attack_warm");
+											owner.play("attack_warm");
 											_actNext_ = "attack_warm";
 											setTimeOutIndex = getTimer();
 										}
@@ -288,119 +289,119 @@
 				} else {
 					_interval_ = mainActionData.currInterval;
 				}
-				_local17 = 0;
-				if ((((renderDurTime > 0)) && ((_local22 == Scene.scene.mainChar)))) {
+				t = 0;
+				if ((((renderDurTime > 0)) && ((owner == Scene.scene.mainChar)))) {
 					renderDurTime = 0;
 				}
-				_local13 = Scene.scene.middleLayer.numChildren;
-				_local5 = FPSUtils.fps;
-				if ((_local22 as Char)) {
-					if ((((_local22.type == "monster_normal")) || ((_local22.type == "0npc_normal")))) {
+				num = Scene.scene.middleLayer.numChildren;
+				fps = FPSUtils.fps;
+				if ((owner as Char)) {
+					if ((((owner.type == "monster_normal")) || ((owner.type == "0npc_normal")))) {
 						if (_actNow_ == "stand") {
-							_local17 = (((Math.random() * 200) >> 0) + 30);
-							if (_local13 > 50) {
-								_local17 = (_local17 + 100);
+							t = (((Math.random() * 200) >> 0) + 30);
+							if (num > 50) {
+								t = (t + 100);
 							}
-							if ((((_local13 > 50)) && ((_local5 < 10)))) {
-								_local17 = (_local17 + 1000);
+							if ((((num > 50)) && ((fps < 10)))) {
+								t = (t + 1000);
 							}
 						} else {
-							if (_local13 > 50) {
-								_local17 = (_local17 + 50);
+							if (num > 50) {
+								t = (t + 50);
 							}
 						}
 					} else {
-						if (_local22.type == "char") {
+						if (owner.type == "char") {
 							if (_actNow_ == "stand") {
-								_local17 = (((Math.random() * 200) >> 0) + 30);
-								if (_local13 > 50) {
-									_local17 = (_local17 + 100);
+								t = (((Math.random() * 200) >> 0) + 30);
+								if (num > 50) {
+									t = (t + 100);
 								}
-								if ((((_local13 > 50)) && ((_local5 < 10)))) {
-									_local17 = (_local17 + (300 + ((Math.random() * 200) >> 0)));
+								if ((((num > 50)) && ((fps < 10)))) {
+									t = (t + (300 + ((Math.random() * 200) >> 0)));
 								}
 							} else {
-								if (_local13 > 50) {
-									_local17 = (_local17 + 15);
+								if (num > 50) {
+									t = (t + 15);
 								}
 							}
 						}
 					}
 				}
-				if (_local22 == Scene.scene.mainChar) {
-					_local19 = (_interval_ + mainActionData.random);
+				if (owner == Scene.scene.mainChar) {
+					durTime = (_interval_ + mainActionData.random);
 				} else {
-					_local19 = ((_interval_ + mainActionData.random) + _local17);
+					durTime = ((_interval_ + mainActionData.random) + t);
 				}
-				_local4 = (getTimer() - _bodyOverTime_);
-				if (((((_local4 - _local19) >= -1)) || (((renderType) && ((_currFrame_ < totalFrames)))))) {
-					_local20 = true;
-					for each (_local21 in bodyPartsHash) {
-						if (_local21) {
-							_local21.currFrame = _currFrame_;
-							_local21.currDir = _dir_;
-							_local21.currAct = _actNow_;
-							if (((((((_local20) && ((_local22 as Char)))) && ((_local22 as Char).isCharMode))) && (!(((_local22 as Char).shadow_id == null))))) {
-								_local20 = false;
-								_local14 = (AvatarUnitDisplay._instanceHash_.take((_local22 as Char).shadow_id) as AvatarUnitDisplay);
-								if ((_local22 as Char).sex == 1) {
-									_local9 = EngineGlobal.avatarDataMale;
-									_local24 = EngineGlobal.shadowAvatarGroupMale;
+				passTime = (getTimer() - _bodyOverTime_);
+				if (((((passTime - durTime) >= -1)) || (((renderType) && ((_currFrame_ < totalFrames)))))) {
+					hasRender = true;
+					for each (actionData in bodyPartsHash) {
+						if (actionData) {
+							actionData.currFrame = _currFrame_;
+							actionData.currDir = _dir_;
+							actionData.currAct = _actNow_;
+							if (((((((hasRender) && ((owner as Char)))) && ((owner as Char).isCharMode))) && (!(((owner as Char).shadow_id == null))))) {
+								hasRender = false;
+								shadowShap = (AvatarUnitDisplay._instanceHash_.take((owner as Char).shadow_id) as AvatarUnitDisplay);
+								if ((owner as Char).sex == 1) {
+									actionData_shadow = EngineGlobal.avatarDataMale;
+									group = EngineGlobal.shadowAvatarGroupMale;
 								} else {
-									_local9 = EngineGlobal.avatarDataFamale;
-									_local24 = EngineGlobal.shadowAvatarGroupFamale;
+									actionData_shadow = EngineGlobal.avatarDataFamale;
+									group = EngineGlobal.shadowAvatarGroupFamale;
 								}
-								if (((((_local24) && (_local24.isLoaded))) && (_local9))) {
-									_local9.currDir = _dir_;
-									_local9.currFrame = _currFrame_;
-									_local9.currAct = _actNow_;
-									_local8 = _local9.getBitmapData(_dir_, _currFrame_);
-									_local12 = _local9.getBitmapDataOffsetX(_dir_, _currFrame_);
-									_local16 = _local9.getBitmapDataOffsetY(_dir_, _currFrame_);
-									_local23 = _local9.type;
-									if (unitType.indexOf(_local14.unit.charType) == -1) {
-										if (_local14.visible) {
-											_local14.onBodyRender("body_effect", _local7, _local8, _local12, _local16);
+								if (((((group) && (group.isLoaded))) && (actionData_shadow))) {
+									actionData_shadow.currDir = _dir_;
+									actionData_shadow.currFrame = _currFrame_;
+									actionData_shadow.currAct = _actNow_;
+									bitmapData_shadow = actionData_shadow.getBitmapData(_dir_, _currFrame_);
+									tx_shadow = actionData_shadow.getBitmapDataOffsetX(_dir_, _currFrame_);
+									ty_shadow = actionData_shadow.getBitmapDataOffsetY(_dir_, _currFrame_);
+									type_shadow = actionData_shadow.type;
+									if (unitType.indexOf(shadowShap.unit.charType) == -1) {
+										if (shadowShap.visible) {
+											shadowShap.onBodyRender("body_effect", type, bitmapData_shadow, tx_shadow, ty_shadow);
 										}
 									} else {
-										_local14.onBodyRender("body_type", _local7, _local8, _local12, _local16);
+										shadowShap.onBodyRender("body_type", type, bitmapData_shadow, tx_shadow, ty_shadow);
 									}
 								}
 							}
-							_local15 = _local21.getBitmapData(_dir_, _currFrame_);
-							_local11 = _local21.getBitmapDataOffsetX(_dir_, _currFrame_);
-							_local10 = _local21.getBitmapDataOffsetY(_dir_, _currFrame_);
-							if (((((((isCharMode) && ((_local22 as Char)))) && (!(_local15)))) && ((_local21.type == "mid")))) {
-								_local2 = (_local22 as Char).sex;
-								if (_local2 == 1) {
-									_local6 = EngineGlobal.avatarDataBaseMale;
-									_local3 = EngineGlobal.shadowAvatarGroupBaseMale;
+							bitmapData = actionData.getBitmapData(_dir_, _currFrame_);
+							tx = actionData.getBitmapDataOffsetX(_dir_, _currFrame_);
+							ty = actionData.getBitmapDataOffsetY(_dir_, _currFrame_);
+							if (((((((isCharMode) && ((owner as Char)))) && (!(bitmapData)))) && ((actionData.type == "mid")))) {
+								cSex = (owner as Char).sex;
+								if (cSex == 1) {
+									actionDataBase = EngineGlobal.avatarDataBaseMale;
+									groupBase = EngineGlobal.shadowAvatarGroupBaseMale;
 								} else {
-									_local6 = EngineGlobal.avatarDataBaseMale;
-									_local3 = EngineGlobal.shadowAvatarGroupBaseMale;
+									actionDataBase = EngineGlobal.avatarDataBaseMale;
+									groupBase = EngineGlobal.shadowAvatarGroupBaseMale;
 								}
-								if (_local6) {
-									_local6.currDir = _dir_;
-									_local6.currFrame = _currFrame_;
-									_local6.currAct = _actNow_;
-									_local15 = _local6.getBitmapData(_dir_, _currFrame_);
-									_local11 = _local6.getBitmapDataOffsetX(_dir_, _currFrame_);
-									_local10 = _local21.getBitmapDataOffsetY(_dir_, _currFrame_);
+								if (actionDataBase) {
+									actionDataBase.currDir = _dir_;
+									actionDataBase.currFrame = _currFrame_;
+									actionDataBase.currAct = _actNow_;
+									bitmapData = actionDataBase.getBitmapData(_dir_, _currFrame_);
+									tx = actionDataBase.getBitmapDataOffsetX(_dir_, _currFrame_);
+									ty = actionData.getBitmapDataOffsetY(_dir_, _currFrame_);
 								}
 							}
-							_local7 = _local21.type;
+							type = actionData.type;
 							if (unitType.indexOf(this.charType) == -1) {
-								if (((_local22) && (_local22.visible))) {
-									_local22.onBodyRender("body_effect", _local7, _local15, _local11, _local10);
+								if (((owner) && (owner.visible))) {
+									owner.onBodyRender("body_effect", type, bitmapData, tx, ty);
 								}
 							} else {
-								if (_local22) {
-									_local22.onBodyRender("body_type", _local7, _local15, _local11, _local10);
+								if (owner) {
+									owner.onBodyRender("body_type", type, bitmapData, tx, ty);
 								}
 							}
 						}
 					}
-					if (((((_local4 - _local19) >= 0)) || ((renderType == PLAY_NEXT_RENDER)))) {
+					if (((((passTime - durTime) >= 0)) || ((renderType == PLAY_NEXT_RENDER)))) {
 						if (((((!((_skillFrameHandler_ == null))) && ((_currFrame_ == mainActionData.skillFrame)))) && ((((_actNow_ == "attack")) || ((_actNow_ == "skill")))))) {
 							_skillFrameHandler_(_actNow_, _currFrame_);
 						}
@@ -433,81 +434,81 @@
 		
 		public function onEffectRender():void
 		{
-			var _local6:int;
-			var _local11 = null;
-			var _local5 = null;
-			var _local16:int;
-			var _local4 = null;
-			var _local17 = null;
-			var _local8:Boolean;
-			var _local19 = null;
-			var _local7 = null;
+			var cFrame:int;
+			var ownerKey:String = null;
+			var actionData_id:String = null;
+			var oDir:int;
+			var layer:String = null;
+			var actionData:AvatarActionData = null;
+			var pass:Boolean;
+			var dataFormat:AvatarDataFormat = null;
+			var type:String = null;
 			var _local20:Boolean;
 			var _local2:Boolean;
-			var _local15:int;
-			var _local1:int;
-			var _local13 = null;
-			var _local10:int;
-			var _local9:int;
-			var _local12 = null;
-			var _local14 = null;
+			var durt:int;
+			var interval:int;
+			var bitmapData:BitmapData = null;
+			var tx:int;
+			var ty:int;
+			var owner2:IAvatar = null;
+			var effect:AvatarEffect = null;
 			if (_isDisposed_ || oid == null) {
 				return;
 			}
 			effectHash.length;
-			var _local18:IAvatar = AvatarUnitDisplay.takeUnitDisplay(this.oid);
-			for each (var _local3:Object in effectHash) {
-				_local11 = _local3.key;
-				_local5 = _local3.actionData_id;
-				_local16 = 0;
-				_local4 = _local3.layer;
-				_local17 = AvatarActionData.takeAvatarData(_local5);
-				_local8 = false;
-				_local19 = _local17.currDataFormat;
-				if (_local19) {
-					if (_local19.totalDir > 1) {
-						_local16 = _dir_;
+			var target:IAvatar = AvatarUnitDisplay.takeUnitDisplay(this.oid);
+			for each (var data:Object in effectHash) {
+				ownerKey = data.key;
+				actionData_id = data.actionData_id;
+				oDir = 0;
+				layer = data.layer;
+				actionData = AvatarActionData.takeAvatarData(actionData_id);
+				pass = false;
+				dataFormat = actionData.currDataFormat;
+				if (dataFormat) {
+					if (dataFormat.totalDir > 1) {
+						oDir = _dir_;
 					}
-					_local7 = _local17.type;
+					type = actionData.type;
 					_local20 = true;
-					if (_local19.id != _local17.recordDataFormat) {
-						_local8 = true;
+					if (dataFormat.id != actionData.recordDataFormat) {
+						pass = true;
 					}
-					_local17.recordDataFormat = _local19.id;
-					if ((((_local17.replay == 0)) || (_local8))) {
-						_local17.replay = _local19.replay;
+					actionData.recordDataFormat = dataFormat.id;
+					if ((((actionData.replay == 0)) || (pass))) {
+						actionData.replay = dataFormat.replay;
 					}
-					if ((((FPSUtils.fps < 5)) && (!((_local17.replay == -1))))) {
-						_local17.currFrame = _local17.totalFrames;
+					if ((((FPSUtils.fps < 5)) && (!((actionData.replay == -1))))) {
+						actionData.currFrame = actionData.totalFrames;
 					}
-					if (((!((_local17.stopFrame == -1))) && ((_local17.stopFrame >= _local17.totalFrames)))) {
-						_local17.stopFrame = (_local17.totalFrames - 1);
+					if (((!((actionData.stopFrame == -1))) && ((actionData.stopFrame >= actionData.totalFrames)))) {
+						actionData.stopFrame = (actionData.totalFrames - 1);
 					}
-					if (_local17.playEndAndStopFrame != -1) {
-						if (_local17.playEndAndStopFrame >= _local17.totalFrames) {
-							_local17.playEndAndStopFrame = (_local17.totalFrames - 1);
+					if (actionData.playEndAndStopFrame != -1) {
+						if (actionData.playEndAndStopFrame >= actionData.totalFrames) {
+							actionData.playEndAndStopFrame = (actionData.totalFrames - 1);
 						}
-						if (_local17.playEndAndStopFrame < -1) {
-							_local17.playEndAndStopFrame = 0;
+						if (actionData.playEndAndStopFrame < -1) {
+							actionData.playEndAndStopFrame = 0;
 						}
 					}
-					var _local21;
-					if ((((((_local17.currFrame >= _local17.totalFrames)) || (((!((_local17.stopFrame == -1))) && ((_local17.currFrame >= _local17.stopFrame)))))) || ((((_local17.currFrame >= _local17.totalFrames)) && (!((_local17.playEndAndStopFrame == -1))))))) {
-						_local2 = ((!((_local17.stopFrame == -1))) && ((_local17.currFrame >= _local17.stopFrame)));
-						if (_local17.replay == -1) {
+					var _local21:int;
+					if ((((((actionData.currFrame >= actionData.totalFrames)) || (((!((actionData.stopFrame == -1))) && ((actionData.currFrame >= actionData.stopFrame)))))) || ((((actionData.currFrame >= actionData.totalFrames)) && (!((actionData.playEndAndStopFrame == -1))))))) {
+						_local2 = ((!((actionData.stopFrame == -1))) && ((actionData.currFrame >= actionData.stopFrame)));
+						if (actionData.replay == -1) {
 //							(_local2) ? _local21 = _local17.stopFrame;
 //_local17.currFrame = _local21;
 //_local21 : _local21 = 0;
 //_local17.currFrame = _local21;
 //_local21;
-							if (((!(_local2)) && (!((_local17.playEndAndStopFrame == -1))))) {
-								_local21 = _local17.playEndAndStopFrame;
-								_local17.currFrame = _local21;
-								_local17.stopFrame = _local21;
+							if (((!(_local2)) && (!((actionData.playEndAndStopFrame == -1))))) {
+								_local21 = actionData.playEndAndStopFrame;
+								actionData.currFrame = _local21;
+								actionData.stopFrame = _local21;
 							}
-							if (_local17.currAct != "stand") {
-								_local17.currAct = "stand";
-								_local17.replay = _local17.currDataFormat.replay;
+							if (actionData.currAct != "stand") {
+								actionData.currAct = "stand";
+								actionData.replay = actionData.currDataFormat.replay;
 							}
 						} else {
 //							(_local2) ? _local21 = _local17.stopFrame;
@@ -515,127 +516,127 @@
 //_local21 : _local21 = 0;
 //_local17.currFrame = _local21;
 //_local21;
-							if (((!(_local2)) && (!((_local17.playEndAndStopFrame == -1))))) {
-								if (_local18) {
-									_local18.onEffectPlayEnd(_local11);
+							if (((!(_local2)) && (!((actionData.playEndAndStopFrame == -1))))) {
+								if (target) {
+									target.onEffectPlayEnd(ownerKey);
 								}
-								_local21 = _local17.playEndAndStopFrame;
-								_local17.currFrame = _local21;
-								_local17.stopFrame = _local21;
+								_local21 = actionData.playEndAndStopFrame;
+								actionData.currFrame = _local21;
+								actionData.stopFrame = _local21;
 								_local2 = true;
-								_local17.replay = 1;
+								actionData.replay = 1;
 							}
 							if (!_local2) {
-								if (_local17.currDataFormat.replay == 1) {
+								if (actionData.currDataFormat.replay == 1) {
 									try {
-										_local15 = _local17.getDataFromat(_actNow_).intervalTimes[(_local17.currFrame - 1)];
-										if ((getTimer() - _local17.passTime) < _local15) {
+										durt = actionData.getDataFromat(_actNow_).intervalTimes[(actionData.currFrame - 1)];
+										if ((getTimer() - actionData.passTime) < durt) {
 											return;
 										}
 									} catch(e:Error) {
-										_local17.currFrame = _local17.totalFrames;
-										_local15 = _local17.currDataFormat.intervalTimes[(_local17.currFrame - 1)];
-										if ((getTimer() - _local17.passTime) < _local15) {
+										actionData.currFrame = actionData.totalFrames;
+										durt = actionData.currDataFormat.intervalTimes[(actionData.currFrame - 1)];
+										if ((getTimer() - actionData.passTime) < durt) {
 											return;
 										}
 									}
 									_local20 = false;
-									if (_local3.layer == "TOP_LAYER") {
-										if (_local18) {
-											_local18.onEffectRender(_local11, "body_top_effect", null, 0, 0);
+									if (data.layer == "TOP_LAYER") {
+										if (target) {
+											target.onEffectRender(ownerKey, "body_top_effect", null, 0, 0);
 										}
 									} else {
-										if (_local3.layer == "body_bottom_effect") {
-											if (_local18) {
-												_local18.onEffectRender(_local11, "body_bottom_effect", null, 0, 0);
+										if (data.layer == "body_bottom_effect") {
+											if (target) {
+												target.onEffectRender(ownerKey, "body_bottom_effect", null, 0, 0);
 											}
 										} else {
-											if (_local3.layer == "BOTTOM_LAYER") {
-												if (_local18) {
-													_local18.onEffectRender(_local11, "BOTTOM_LAYER", null, 0, 0);
+											if (data.layer == "BOTTOM_LAYER") {
+												if (target) {
+													target.onEffectRender(ownerKey, "BOTTOM_LAYER", null, 0, 0);
 												}
 											} else {
-												if (_local18) {
-													_local18.onEffectRender(_local11, "body_effect", null, 0, 0);
+												if (target) {
+													target.onEffectRender(ownerKey, "body_effect", null, 0, 0);
 												}
 											}
 										}
 									}
-									if (((!((_local17.currAct == "stand"))) || (_local8))) {
-										_local17.currAct = "stand";
+									if (((!((actionData.currAct == "stand"))) || (pass))) {
+										actionData.currAct = "stand";
 									} else {
-										effectHash.remove(_local11);
-										if (_local18) {
-											_local18.onEffectPlayEnd(_local11);
+										effectHash.remove(ownerKey);
+										if (target) {
+											target.onEffectPlayEnd(ownerKey);
 										}
-										if (((_local18) && (!((_local18 is AvatarUnitDisplay))))) {
-											if ((_local18 as AvatarEffect).autoRecover) {
-												_local18.recover();
+										if (((target) && (!((target is AvatarUnitDisplay))))) {
+											if ((target as AvatarEffect).autoRecover) {
+												target.recover();
 											}
 										}
 									}
 								} else {
-									_local17.replay = (_local17.replay - 1);
-									_local17.currFrame = 0;
+									actionData.replay = (actionData.replay - 1);
+									actionData.currFrame = 0;
 								}
 							}
 						}
 					}
-					_local1 = (_local17.currInterval + _local17.random);
-					if ((((_local18.type == "STATIC_STAGE_EFFECT")) && (Scene.scene.mainChar.isRuning))) {
-						_local1 = (_local1 + (((Math.random() * 80) >> 0) + 50));
+					interval = (actionData.currInterval + actionData.random);
+					if ((((target.type == "STATIC_STAGE_EFFECT")) && (Scene.scene.mainChar.isRuning))) {
+						interval = (interval + (((Math.random() * 80) >> 0) + 50));
 						if (Scene.scene.mainChar.isRuning) {
-							_local1 = (_local1 + 120);
+							interval = (interval + 120);
 						}
 					}
 					if ((((((Scene.scene.numChildren > 100)) && ((FPSUtils.fps < 10)))) && ((isMain == false)))) {
-						_local1 = (_local1 + ((Scene.scene.numChildren * 3) + 100));
+						interval = (interval + ((Scene.scene.numChildren * 3) + 100));
 					}
-					if (((((getTimer() - _local17.passTime) > _local1)) && (_local20))) {
-						_local17.passTime = getTimer();
-						_local6 = _local17.currFrame;
-						_local13 = _local17.getBitmapData(_local16, _local6);
-						_local10 = _local17.getBitmapDataOffsetX(_local16, _local6);
-						_local9 = _local17.getBitmapDataOffsetY(_local16, _local6);
-						if (_local18) {
-							if ((((_local3.layer == "body_top_effect")) || ((_local3.layer == "TOP_LAYER")))) {
-								_local18.onEffectRender(_local11, "body_top_effect", _local13, _local10, _local9);
+					if (((((getTimer() - actionData.passTime) > interval)) && (_local20))) {
+						actionData.passTime = getTimer();
+						cFrame = actionData.currFrame;
+						bitmapData = actionData.getBitmapData(oDir, cFrame);
+						tx = actionData.getBitmapDataOffsetX(oDir, cFrame);
+						ty = actionData.getBitmapDataOffsetY(oDir, cFrame);
+						if (target) {
+							if ((((data.layer == "body_top_effect")) || ((data.layer == "TOP_LAYER")))) {
+								target.onEffectRender(ownerKey, "body_top_effect", bitmapData, tx, ty);
 							} else {
-								if (_local3.layer == "TOP_UP_LAYER") {
-									_local18.onEffectRender(_local11, "TOP_UP_LAYER", _local13, _local10, _local9);
+								if (data.layer == "TOP_UP_LAYER") {
+									target.onEffectRender(ownerKey, "TOP_UP_LAYER", bitmapData, tx, ty);
 								} else {
-									if (_local3.layer == "body_bottom_effect") {
-										_local18.onEffectRender(_local11, "body_bottom_effect", _local13, _local10, _local9);
+									if (data.layer == "body_bottom_effect") {
+										target.onEffectRender(ownerKey, "body_bottom_effect", bitmapData, tx, ty);
 									} else {
-										if (_local3.layer == "BOTTOM_LAYER") {
-											if (_local18) {
-												_local18.onEffectRender(_local11, "BOTTOM_LAYER", _local13, _local10, _local9);
+										if (data.layer == "BOTTOM_LAYER") {
+											if (target) {
+												target.onEffectRender(ownerKey, "BOTTOM_LAYER", bitmapData, tx, ty);
 											}
 										} else {
-											_local18.onEffectRender(_local11, "body_effect", _local13, _local10, _local9);
+											target.onEffectRender(ownerKey, "body_effect", bitmapData, tx, ty);
 										}
 									}
 								}
 							}
 						}
-						_local17.currFrame = (_local17.currFrame + 1);
+						actionData.currFrame = (actionData.currFrame + 1);
 					}
 				} else {
-					if (_local17.isReady) {
-						if (_local17.currAct == "stand") {
-							_local12 = AvatarUnitDisplay.takeUnitDisplay(this.oid);
-							if (_local3.layer == "TOP_LAYER") {
-								_local12.onEffectRender(_local11, "body_top_effect", null, 0, 0);
+					if (actionData.isReady) {
+						if (actionData.currAct == "stand") {
+							owner2 = AvatarUnitDisplay.takeUnitDisplay(this.oid);
+							if (data.layer == "TOP_LAYER") {
+								owner2.onEffectRender(ownerKey, "body_top_effect", null, 0, 0);
 							} else {
-								if (_local3.layer == "body_bottom_effect") {
-									_local12.onEffectRender(_local11, "body_bottom_effect", null, 0, 0);
+								if (data.layer == "body_bottom_effect") {
+									owner2.onEffectRender(ownerKey, "body_bottom_effect", null, 0, 0);
 								} else {
-									_local12.onEffectRender(_local11, "body_effect", null, 0, 0);
+									owner2.onEffectRender(ownerKey, "body_effect", null, 0, 0);
 								}
 							}
-							_local14 = (_local12 as AvatarEffect);
-							if (((_local14) && (_local14.parent))) {
-								_local14.parent.removeChild(_local14);
+							effect = (owner2 as AvatarEffect);
+							if (((effect) && (effect.parent))) {
+								effect.parent.removeChild(effect);
 							}
 						}
 					}

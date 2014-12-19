@@ -515,22 +515,22 @@
 		
 		private function analyzeSWF(data:Object=null):void
 		{
-			var avatarDataGroup = null;
-			var link = null;
-			var cls = null;
+			var avatarDataGroup:AvatarDataFormatGroup = null;
+			var link:String = null;
+			var cls:Class = null;
 			var totalFrams:int;
-			var idName = null;
-			var act = null;
-			var path = null;
+			var idName:String = null;
+			var act:String = null;
+			var path:String = null;
 			var dir:int;
-			var key = null;
-			var loader = null;
-			var _local4:Boolean;
-			var dic = null;
-			var bitmapdataDic = null;
+			var key:String = null;
+			var loader:DisplayLoader = null;
+			var isOk:Boolean;
+			var dic:Dictionary = null;
+			var bitmapdataDic:Dictionary = null;
 			var frameIndex:int;
-			var _local2 = null;
-			var _local13 = null;
+			var bmd:BitmapData = null;
+			var id2:String = null;
 			if ((!data && analyzeSWFQueue.length == 0) || WealthElisor.isClearing) {
 				return;
 			}
@@ -557,7 +557,7 @@
 				if (!loader) {
 					return;
 				}
-				_local4 = true;
+				isOk = true;
 				avatarData.setActReady(data.act, data.dir, true);
 				if (analyeHash[idName] == null) {
 					dic = new Dictionary();
@@ -577,25 +577,25 @@
 						if (bitmapdataDic[link] == null && !WealthElisor.isClearing) {
 							try {
 								cls = loader.contentLoaderInfo.applicationDomain.getDefinition(link) as Class;
-								_local2 = new cls();
+								bmd = new cls();
 							} catch(e:Error) {
-								if (_local2) {
-									_local2.dispose();
+								if (bmd) {
+									bmd.dispose();
 								}
-								_local2 = null;
-								_local4 = false;
+								bmd = null;
+								isOk = false;
 								avatarData.setActReady(act, dir, false);
 							}
 							if (bitmapdataDic) {
-								bitmapdataDic[link] = _local2;
+								bitmapdataDic[link] = bmd;
 							}
-							_local2 = null;
+							bmd = null;
 						}
 						frameIndex++;
 					}
-					if (_local4) {
+					if (isOk) {
 						if (avatarDataGroup.isCreateWarn && warmHash[avatarData.actionName] != null) {
-							_local13 = avatarDataGroup.takeAction(warmHash[avatarData.actionName]).id;
+							id2 = avatarDataGroup.takeAction(warmHash[avatarData.actionName]).id;
 							_bitmapdataHash_.put(idName + "_" + warmHash[avatarData.actionName], bitmapdataDic);
 						}
 						_bitmapdataHash_.put(idName + "_" + act, bitmapdataDic);
@@ -607,16 +607,14 @@
 		
 		public function clear():void
 		{
-			var _local2 = null;
-			var _local12 = null;
-			var _local18 = null;
-			var _local3 = null;
-			var _local1 = null;
-			var _local20 = null;
-			var _local6 = null;
-			var _local14 = null;
-			var _local17 = null;
-			var _local15 = null;
+			var arr:Array = null;
+			var swf_id:String = null;
+			var dataFormat:AvatarDataFormat = null;
+			var hash:Dictionary = null;
+			var bmd:BitmapData = null;
+			var id_:String = null;
+			var actData:Object = null;
+			var dataFormat_id:String = null;
 			
 			var reg:RegExp = /.*[wco|wcx|dcx|dco|fcx|fco].*/;
 			WealthElisor.isClearing = true;
@@ -625,102 +623,101 @@
 			_wealthQueue_._wealthGroup_.resetWealths();
 			_wealthQueue_.stop = true;
 			trace("=-=-=-=-=-clear");
-			var _local23:Boolean;
+			var cacheMemory:Boolean;
 			if (Engine.currMemory >= 700) {
-				_local23 = false;
+				cacheMemory = false;
 			}
-			var _local11:Hash = new Hash();
-			var _local19:Hash = new Hash();
-			var _local9:Boolean;
+			var assetsHash:Hash = new Hash();
+			var assetsHash2:Hash = new Hash();
+			var isOk:Boolean;
 			for (var key:String in _bitmapdataHash_) {
 				if (reg.test(key)) {
-					if (_local23) {
-						_local9 = false;
+					if (cacheMemory) {
+						isOk = false;
 					}
 				}
-				if (_local9) {
-					_local3 = _bitmapdataHash_[key];
-					for (var _local16:String in _local3) {
-						_local2 = _local16.split(".");
-						_local12 = _local2[0] + "_" + _local2[1] + ".tmp";
-						_local11.put(_local12, _local12);
-						_local12 = _local2[0] + "." + _local2[1];
-						_local19.put(_local12, _local12);
-						WealthStoragePort.clean(_local2[0]);
-						_local1 = _local3[_local16] as BitmapData;
-						if (_local1) {
-							_local1.dispose();
+				if (isOk) {
+					hash = _bitmapdataHash_[key];
+					for (var tmp_id:String in hash) {
+						arr = tmp_id.split(".");
+						swf_id = arr[0] + "_" + arr[1] + ".tmp";
+						assetsHash.put(swf_id, swf_id);
+						swf_id = arr[0] + "." + arr[1];
+						assetsHash2.put(swf_id, swf_id);
+						WealthStoragePort.clean(arr[0]);
+						bmd = hash[tmp_id] as BitmapData;
+						if (bmd) {
+							bmd.dispose();
 						}
 					}
-					_local3 = new Dictionary();
+					hash = new Dictionary();
 					delete _bitmapdataHash_[key];
 				}
 			}
-			var _local21:Hash = WealthElisor.loaderInstanceHash;
-			trace("回收前：", _local21.length);
-			for each (var _local7:ILoader in _local21) {
-				if ((_local7 as DisplayLoader)) {
-					if (_local7.path) {
-						_local2 = _local7.path.split("/");
-						_local12 = _local2[(_local2.length - 1)];
-						_local9 = true;
-						if (((reg.test(_local12)) && (_local23))) {
-							_local9 = false;
+			var loaderInstanceHash:Hash = WealthElisor.loaderInstanceHash;
+			trace("回收前：", loaderInstanceHash.length);
+			for each (var loader:ILoader in loaderInstanceHash) {
+				if ((loader as DisplayLoader)) {
+					if (loader.path) {
+						arr = loader.path.split("/");
+						swf_id = arr[(arr.length - 1)];
+						isOk = true;
+						if (((reg.test(swf_id)) && (cacheMemory))) {
+							isOk = false;
 						}
-						if (((((_local9) && ((_local7 as DisplayLoader)))) && (!((_local12.indexOf(".tmp") == -1))))) {
-							WealthElisor.removeSign(_local7.path);
-							_local20 = _local7.id;
-							_local7.dispose();
-							_local21.remove(_local16);
+						if (((((isOk) && ((loader as DisplayLoader)))) && (!((swf_id.indexOf(".tmp") == -1))))) {
+							WealthElisor.removeSign(loader.path);
+							id_ = loader.id;
+							loader.dispose();
+							loaderInstanceHash.remove(tmp_id);
 						}
 					}
 				}
 			}
-			trace("回收后：", _local21.length);
-			for (var _local10:String in _urlRequestsHash_) {
-				_local2 = _local10.split("/");
-				_local12 = _local2[(_local2.length - 1)];
-				_local14 = _local10.slice(0, _local10.indexOf("@", 2));
-				_local18 = AvatarDataFormat.takeAvatarDataFormat(_local14);
-				_local9 = true;
-				if (((reg.test(_local18.idName)) && (_local23))) {
-					_local9 = false;
+			trace("回收后：", loaderInstanceHash.length);
+			for (var link:String in _urlRequestsHash_) {
+				arr = link.split("/");
+				swf_id = arr[(arr.length - 1)];
+				dataFormat_id = link.slice(0, link.indexOf("@", 2));
+				dataFormat = AvatarDataFormat.takeAvatarDataFormat(dataFormat_id);
+				isOk = true;
+				if (((reg.test(dataFormat.idName)) && (cacheMemory))) {
+					isOk = false;
 				}
-				if (_local9) {
-					if (_local18) {
-						_local6 = getActAndDir(_local10);
-						_local18.resetActReady();
+				if (isOk) {
+					if (dataFormat) {
+						actData = getActAndDir(link);
+						dataFormat.resetActReady();
 					}
-					_urlRequestsHash_.remove(_local10);
+					_urlRequestsHash_.remove(link);
 				}
 			}
 			_urlRequestsHash_.reset();
-			var _local13:Hash = AvatarDataFormat.getInstanceHash;
-			for each (var _local5:AvatarDataFormat in _local13) {
-				_local9 = true;
-				if (((reg.test(_local5.idName)) && (_local23))) {
-					_local9 = false;
+			var hashx:Hash = AvatarDataFormat.getInstanceHash;
+			for each (var dataFormat_:AvatarDataFormat in hashx) {
+				isOk = true;
+				if (((reg.test(dataFormat_.idName)) && (cacheMemory))) {
+					isOk = false;
 				}
-				if (_local9) {
-					_local5.resetActReady();
+				if (isOk) {
+					dataFormat_.resetActReady();
 				}
 			}
-			for (var _local4:String in _swfHash_) {
-				_local9 = true;
-				if (((reg.test(_local4)) && (_local23))) {
-					_local9 = false;
+			for (var link2:String in _swfHash_) {
+				isOk = true;
+				if (((reg.test(link2)) && (cacheMemory))) {
+					isOk = false;
 				}
-				if (_local9) {
-					if (_local19.has(_local4)) {
-						_swfHash_.remove(_local4);
+				if (isOk) {
+					if (assetsHash2.has(link2)) {
+						_swfHash_.remove(link2);
 					}
 				}
 			}
 			analyeHash = new Dictionary();
-			this;
-			WealthElisor.clear(_local11);
-			_local11.reset();
-			_local19.reset();
+			WealthElisor.clear(assetsHash);
+			assetsHash.reset();
+			assetsHash2.reset();
 			_wealthQueue_.stop = false;
 		}
 
