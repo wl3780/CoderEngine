@@ -47,149 +47,154 @@
 
 		public static function loopRect(index_x:int, index_y:int, loopNum:uint, dic:Dictionary, type:int, indexPt:Point):Point
 		{
-			var _local11:int;
-			var _local21:int;
-			var _local20:int;
-			var _local22:int;
-			var _local10:int;
-			var _local19:int;
-			var _local16:int;
-			var _local17:Boolean;
-			var _local18:int;
-			var _local13:String = null;
-			var _local24:Tile = null;
-			var _local9:int;
-			var _local12:Boolean;
-			var _local23:int;
-			var _local14:int;
+			var loop:int;
+			var loop_height:int;
+			var px:int;
+			var py:int;
+			var dir:int;
+			var num:int;
+			var k:int;
+			var isBreak:Boolean;
+			var i:int;
+			var key:String = null;
+			var tile:Tile = null;
+			var dirx:int;
+			var ok:Boolean;
+			var currDir:int;
+			var startDepth:int;
 			index_x = (index_x - 2);
 			index_y = (index_y - 2);
-			loopNum = (_local14 + loopNum);
-			var _local8:int = 2;
-			var _local15:int = _local14;
-			var _local7:int = ((_local8 * _local14) + 1);
-			var _local25:Array = [];
-			while (_local15 < loopNum) {
-				_local20 = (index_x - (_local15 - 1));
-				_local22 = (index_y - (_local15 - 1));
-				_local10 = 1;
-				_local19 = 0;
-				_local16 = 0;
-				_local21 = (_local7 + _local8);
-				_local11 = (Math.pow(_local21, 2) - Math.pow(_local7, 2));
-				_local17 = false;
-				_local18 = 0;
-				while (_local18 < _local11) {
-					if ((_local16 % (_local21 - 1)) == 0) {
-						_local19++;
-						if ((_local19 % 3) == 0) {
-							_local10 = -(_local10);
+			loopNum = (startDepth + loopNum);
+			var pow:int = 2;
+			var n:int = startDepth;
+			var loop_low:int = ((pow * startDepth) + 1);
+			var array:Array = [];
+			while (n < loopNum) {
+				px = (index_x - (n - 1));
+				py = (index_y - (n - 1));
+				dir = 1;
+				num = 0;
+				k = 0;
+				loop_height = (loop_low + pow);
+				loop = (Math.pow(loop_height, 2) - Math.pow(loop_low, 2));
+				isBreak = false;
+				i = 0;
+				while (i < loop) {
+					if ((k % (loop_height - 1)) == 0) {
+						num++;
+						if ((num % 3) == 0) {
+							dir = -(dir);
 						}
 					}
-					(((_local19 % 2))==0) ? _local20 = (_local20 + _local10) : _local22 = (_local22 + _local10);
+					(((num % 2))==0) ? px = (px + dir) : py = (py + dir);
 
-					_local13 = ((_local20 + "|") + _local22);
-					_local24 = dic[_local13];
-					if (((((_local24) && (!((_local24.type == 0))))) && (!((_local24.type == type))))) {
-						_local9 = LinearUtils.getCharDir(index_x, index_y, _local20, _local22);
-						_local12 = false;
+					key = ((px + "|") + py);
+					tile = dic[key];
+					if (((((tile) && (!((tile.type == 0))))) && (!((tile.type == type))))) {
+						dirx = LinearUtils.getCharDir(index_x, index_y, px, py);
+						ok = false;
 						if (((!(Scene.scene.mainChar.isLoopMove)) && (!((Scene.scene.mapData.map_id == 10291))))) {
-							_local12 = true;
+							ok = true;
 						}
-						_local23 = LinearUtils.getCharDir(Scene.scene.mainChar.x, Scene.scene.mainChar.y, Scene.scene.mouseX, Scene.scene.mouseY);
+						currDir = LinearUtils.getCharDir(Scene.scene.mainChar.x, Scene.scene.mainChar.y, Scene.scene.mouseX, Scene.scene.mouseY);
 						if (!newStartPt) {
-							_local25.push({
-								tile:_local24,
-								dis:Point.distance(_local24.pt, indexPt)
+							array.push({
+								tile:tile,
+								dis:Point.distance(tile.pt, indexPt)
 							});
 						} else {
-							if (_local24.pt.toString() != newStartPt.toString()) {
-								if (((fineFaceTile(_local23, _local9)) || (_local12))) {
-									_local25.push({
-										tile:_local24,
-										dir:_local9,
-										dis:Point.distance(_local24.pt, indexPt)
+							if (tile.pt.toString() != newStartPt.toString()) {
+								if (((findFaceTile(currDir, dirx)) || (ok))) {
+									array.push({
+										tile:tile,
+										dir:dirx,
+										dis:Point.distance(tile.pt, indexPt)
 									});
-									_local17 = true;
+									isBreak = true;
 								}
 							}
 						}
 					}
-					_local16++;
-					_local18++;
+					k++;
+					i++;
 				}
-				if (_local17) {
-					if (_local25.length) {
-						_local25.sortOn(["dis", "dir"], [16, 16]);
-						return _local25[0].tile.pt;
+				if (isBreak) {
+					if (array.length) {
+						array.sortOn(["dis", "dir"], [16, 16]);
+						return array[0].tile.pt;
 					}
 					return null;
 				}
-				_local15++;
-				_local7 = (_local7 + _local8);
+				n++;
+				loop_low = (loop_low + pow);
 			}
 			return null;
 		}
-		public static function fineFaceTile(faceDir:int, averDir:int):Boolean{
-			var _local5:int;
-			var _local3:int;
-			var _local4:int = (faceDir - 2);
-			var _local6:Array = [(faceDir - 1), faceDir, (faceDir + 1)];
-			_local5 = 0;
-			while (_local5 < _local6.length) {
-				_local3 = _local6[_local5];
-				if (_local3 < 0) {
-					_local6[_local5] = (8 - _local3);
+		
+		public static function findFaceTile(faceDir:int, averDir:int):Boolean
+		{
+			var i:int;
+			var v:int;
+			var startDir:int = (faceDir - 2);
+			var array:Array = [(faceDir - 1), faceDir, (faceDir + 1)];
+			i = 0;
+			while (i < array.length) {
+				v = array[i];
+				if (v < 0) {
+					array[i] = (8 - v);
 				}
-				_local5++;
+				i++;
 			}
-			if (_local6.indexOf(averDir) == -1) {
+			if (array.indexOf(averDir) == -1) {
 				return false;
 			}
 			return true;
 		}
-		public static function cleanPath(array:Array):Array{
-			var _local7:int;
-			var _local5:Point = null;
-			var _local2:Point = null;
-			var _local3:Point = null;
-			var _local4:Number;
-			var _local6:Number;
+		
+		public static function cleanPath(array:Array):Array
+		{
+			var i:int;
+			var prev_p:Point = null;
+			var curr_p:Point = null;
+			var next_p:Point = null;
+			var k1:Number;
+			var k2:Number;
 			if (array.length > 2) {
-				_local7 = 1;
-				while (_local7 < (array.length - 1)) {
-					_local5 = array[(_local7 - 1)];
-					_local2 = array[_local7];
-					_local3 = array[(_local7 + 1)];
-					_local4 = ((_local5.y - _local2.y) / (_local5.x - _local2.x));
-					_local6 = ((_local2.y - _local3.y) / (_local2.x - _local3.x));
-					if (_local4 == _local6) {
-						array.splice(_local7, 1);
-						_local7--;
+				i = 1;
+				while (i < (array.length - 1)) {
+					prev_p = array[(i - 1)];
+					curr_p = array[i];
+					next_p = array[(i + 1)];
+					k1 = ((prev_p.y - curr_p.y) / (prev_p.x - curr_p.x));
+					k2 = ((curr_p.y - next_p.y) / (curr_p.x - next_p.x));
+					if (k1 == k2) {
+						array.splice(i, 1);
+						i--;
 					}
-					_local7++;
+					i++;
 				}
 			}
 			return array;
 		}
 
-		public function getPath(source:Dictionary, start_x:int, start_y:int, end_x:int, end_y:int, isFineNear:Boolean=true, breakSetp:int=10000):Array{
-			var _local13:Tile = null;
-			var _local12:Tile = null;
-			var _local15:Point = new Point(start_x, start_y);
-			var _local11:Point = new Point(end_x, end_y);
-			var _local8:String = ((start_x + "|") + start_y);
-			var _local9:String = ((end_x + "|") + end_y);
-			if (source[_local8]) {
-				_local13 = (source[_local8] as Tile);
-				_local12 = (source[_local9] as Tile);
+		public function getPath(source:Dictionary, start_x:int, start_y:int, end_x:int, end_y:int, isFineNear:Boolean=true, breakSetp:int=10000):Array
+		{
+			var square1:Tile = null;
+			var square2:Tile = null;
+			var start_p:Point = new Point(start_x, start_y);
+			var end_p:Point = new Point(end_x, end_y);
+			var key_start:String = ((start_x + "|") + start_y);
+			var key_end:String = ((end_x + "|") + end_y);
+			if (source[key_start]) {
+				square1 = (source[key_start] as Tile);
+				square2 = (source[key_end] as Tile);
 			}
-			var _local10:Number = getTimer();
+			var t:Number = getTimer();
 			reSet();
-			this.startPoint = loopCheck(source, _local15, 8);
-			newStartPt = _local15;
-			this.endPoint = loopCheck(source, _local11, 8);
-			if ((((this.endPoint == null)) || ((_local15 == null)))) {
+			this.startPoint = loopCheck(source, start_p, 8);
+			newStartPt = start_p;
+			this.endPoint = loopCheck(source, end_p, 8);
+			if ((((this.endPoint == null)) || ((start_p == null)))) {
 				return [];
 			}
 			this.source = source;
@@ -199,71 +204,81 @@
 			while (this.isFinish) {
 				getScale9Grid(source, this.nonce, this.endPoint.clone(), breakSetp);
 			}
-			var _local14:Array = cleanArray();
-			return _local14;
+			var array:Array = cleanArray();
+			return array;
 		}
-		public function stop():void{
+		
+		public function stop():void
+		{
 			this.isFinish = false;
 		}
-		private function loopCheck(source:Dictionary, indexPt:Point, level:int):Point{
-			var _local4:Point = null;
-			var _local6:int = ((mode)==1) ? 2 : 1;
-			var _local5:String = ((indexPt.x + "|") + indexPt.y);
-			if ((((((source[_local5] == null)) || ((source[_local5].type == 0)))) || ((source[_local5].type == _local6)))) {
+		
+		private function loopCheck(source:Dictionary, indexPt:Point, level:int):Point
+		{
+			var point:Point = null;
+			var type:int = ((mode)==1) ? 2 : 1;
+			var key_pt:String = ((indexPt.x + "|") + indexPt.y);
+			if ((((((source[key_pt] == null)) || ((source[key_pt].type == 0)))) || ((source[key_pt].type == type)))) {
 				keyIndex = indexPt;
-				_local4 = loopRect(indexPt.x, indexPt.y, level, source, _local6, indexPt);
-				if (_local4 == null) {
+				point = loopRect(indexPt.x, indexPt.y, level, source, type, indexPt);
+				if (point == null) {
 					this.isFinish = false;
 				}
-				return _local4;
+				return point;
 			}
 			return indexPt;
 		}
-		private function getDis(point:Point, endPoint:Point):int{
-			var _local3:int = (endPoint.x - point.x);
-			((_local3)<0) ? _local3 = -(_local3) : _local3;
-			var _local4:int = (endPoint.y - point.y);
-			((_local4)<0) ? _local4 = -(_local4) : _local4;
-			return _local3 + _local4;
+		
+		private function getDis(point:Point, endPoint:Point):int
+		{
+			var dix:int = (endPoint.x - point.x);
+			((dix)<0) ? dix = -(dix) : dix;
+			var diy:int = (endPoint.y - point.y);
+			((diy)<0) ? diy = -(diy) : diy;
+			return dix + diy;
 		}
-		private function pass(square:Tile):Boolean{
+		
+		private function pass(square:Tile):Boolean
+		{
 			return square.type>0 ? true : false;
 		}
-		private function stratght(tar:Tile, endPt:Point, type:String):void{
-			var _local14:String = null;
-			var _local11:Point = null;
-			var _local15:int;
-			var _local13:int;
-			var _local5:int;
-			var _local6:int;
-			var _local9:int;
-			var _local10:int;
-			var _local8:int;
-			var _local4:TileAstarData = null;
-			var _local12 = null;
-			var _local7 = null;
+		
+		private function stratght(tar:Tile, endPt:Point, type:String):void
+		{
+			var key:String = null;
+			var pt:Point = null;
+			var x:int;
+			var y:int;
+			var dix:int;
+			var diy:int;
+			var costH:int;
+			var costG:int;
+			var costF:int;
+			var data:TileAstarData = null;
+			var openNode:TileAstarData = null;
+			var closeNode:TileAstarData = null;
 			if (tar != null) {
 				if (pass(tar)) {
-					_local14 = tar.key;
-					_local11 = tar.pt;
-					_local15 = tar.x;
-					_local13 = tar.y;
-					_local5 = Math.abs((endPt.x - _local15));
-					_local6 = Math.abs((endPt.y - _local13));
-					_local9 = ((_local5 + _local6) * 10);
-					_local10 = (10 + G);
-					_local8 = (_local10 + _local9);
-					_local4 = new TileAstarData(_local10, _local8, _local11);
+					key = tar.key;
+					pt = tar.pt;
+					x = tar.x;
+					y = tar.y;
+					dix = Math.abs((endPt.x - x));
+					diy = Math.abs((endPt.y - y));
+					costH = ((dix + diy) * 10);
+					costG = (10 + G);
+					costF = (costG + costH);
+					data = new TileAstarData(costG, costF, pt);
 //					((_local4.parent)==null) ? var _local16 = this.nonce;
 //_local4.parent = _local16;
 //_local16 : "";
-					_local12 = openPath[_local14];
-					_local7 = colsePath[_local14];
-					if ((((_local12 == null)) && ((_local7 == null)))) {
-						openPath[_local14] = _local4;
-						this.openArray.push(_local4);
+					openNode = openPath[key];
+					closeNode = colsePath[key];
+					if ((((openNode == null)) && ((closeNode == null)))) {
+						openPath[key] = data;
+						this.openArray.push(data);
 					} else {
-						if (_local12 != null) {
+						if (openNode != null) {
 //							((_local4.F)<_local12.F) ? _local16 = _local4;
 //openPath[_local14] = _local16;
 //_local16 : "";
@@ -304,35 +319,37 @@
 				}
 			}
 		}
-		private function diagonal(tar:Tile, endPt:Point, can:Boolean):void{
-			var _local12 = null;
-			var _local8 = null;
-			var _local10:int;
-			var _local11:int;
-			var _local5:int;
-			var _local6:int;
-			var _local7 = null;
-			var _local9 = null;
-			var _local4 = null;
+		
+		private function diagonal(tar:Tile, endPt:Point, can:Boolean):void
+		{
+			var key:String = null;
+			var pt:Point = null;
+			var dix:int;
+			var diy:int;
+			var costH:int;
+			var costG:int;
+			var data:TileAstarData = null;
+			var openNode:TileAstarData = null;
+			var closeNode:TileAstarData = null;
 			if (((can) && (!((tar == null))))) {
 				if (this.pass(tar)) {
-					_local12 = tar.key;
-					_local8 = tar.pt;
-					_local10 = Math.abs((endPt.x - tar.x));
-					_local11 = Math.abs((endPoint.y - tar.y));
-					_local5 = ((_local10 + _local11) * 10);
-					_local6 = (14 + G);
-					_local7 = new TileAstarData(_local6, (_local6 + _local5), _local8);
+					key = tar.key;
+					pt = tar.pt;
+					dix = Math.abs((endPt.x - tar.x));
+					diy = Math.abs((endPoint.y - tar.y));
+					costH = ((dix + diy) * 10);
+					costG = (14 + G);
+					data = new TileAstarData(costG, (costG + costH), pt);
 //					((_local7.parent)==null) ? var _local13 = this.nonce;
 //_local7.parent = _local13;
 //_local13 : "";
-					_local9 = openPath[_local12];
-					_local4 = colsePath[_local12];
-					if ((((_local9 == null)) && ((_local4 == null)))) {
-						openPath[_local12] = _local7;
-						this.openArray.push(_local7);
+					openNode = openPath[key];
+					closeNode = colsePath[key];
+					if ((((openNode == null)) && ((closeNode == null)))) {
+						openPath[key] = data;
+						this.openArray.push(data);
 					} else {
-						if (_local9 != null) {
+						if (openNode != null) {
 //							((_local7.F)<_local9.F) ? _local13 = _local7;
 //openPath[_local12] = _local13;
 //_local13 : "";
@@ -342,9 +359,9 @@
 			}
 		}
 		private function getScale9Grid(source:Dictionary, data:TileAstarData, endPoint:Point, breakSetp:int):void{
-			var _local7 = null;
-			var _local21:int;
-			var _local8 = null;
+			var tad:TileAstarData = null;
+			var i:int;
+			var td:TileAstarData = null;
 			this.canBL = true;
 			this.canBR = true;
 			this.canTL = true;
@@ -353,153 +370,157 @@
 			this.canCR = true;
 			this.canCL = true;
 			this.canBC = true;
-			var _local24:Point = data.pt;
-			var _local26:int = _local24.x;
-			var _local25:int = _local24.y;
-			var _local11:int = (_local26 + 1);
-			var _local20:int = (_local25 + 1);
-			var _local12:int = (_local26 - 1);
-			var _local18:int = (_local25 - 1);
-			var _local5:Tile = source[((_local12 + "|") + _local18)];
-			var _local6:Tile = source[((_local11 + "|") + _local18)];
-			var _local14:Tile = source[((_local12 + "|") + _local20)];
-			var _local9:Tile = source[((_local11 + "|") + _local20)];
-			var _local13:Tile = source[((_local26 + "|") + _local18)];
-			var _local23:Tile = source[((_local12 + "|") + _local25)];
-			var _local22:Tile = source[((_local11 + "|") + _local25)];
-			var _local15:Tile = source[((_local26 + "|") + _local20)];
-			if (_local13) {
-				stratght(_local13, endPoint, "tc");
+			var pt:Point = data.pt;
+			var x:int = pt.x;
+			var y:int = pt.y;
+			var x1:int = (x + 1);
+			var y1:int = (y + 1);
+			var x2:int = (x - 1);
+			var y2:int = (y - 1);
+			var tl:Tile = source[((x2 + "|") + y2)];
+			var tr:Tile = source[((x1 + "|") + y2)];
+			var bl:Tile = source[((x2 + "|") + y1)];
+			var br:Tile = source[((x1 + "|") + y1)];
+			var tc:Tile = source[((x + "|") + y2)];
+			var cl:Tile = source[((x2 + "|") + y)];
+			var cr:Tile = source[((x1 + "|") + y)];
+			var bc:Tile = source[((x + "|") + y1)];
+			if (tc) {
+				stratght(tc, endPoint, "tc");
 			}
-			if (_local23) {
-				stratght(_local23, endPoint, "cl");
+			if (cl) {
+				stratght(cl, endPoint, "cl");
 			}
-			if (_local22) {
-				stratght(_local22, endPoint, "cr");
+			if (cr) {
+				stratght(cr, endPoint, "cr");
 			}
-			if (_local15) {
-				stratght(_local15, endPoint, "bc");
+			if (bc) {
+				stratght(bc, endPoint, "bc");
 			}
-			if (_local5) {
-				diagonal(_local5, endPoint, canTL);
+			if (tl) {
+				diagonal(tl, endPoint, canTL);
 			}
-			if (_local6) {
-				diagonal(_local6, endPoint, canTR);
+			if (tr) {
+				diagonal(tr, endPoint, canTR);
 			}
-			if (_local14) {
-				diagonal(_local14, endPoint, canBL);
+			if (bl) {
+				diagonal(bl, endPoint, canBL);
 			}
-			if (_local9) {
-				diagonal(_local9, endPoint, canBR);
+			if (br) {
+				diagonal(br, endPoint, canBR);
 			}
-			var _local19:int = openArray.length;
-			if ((((_local19 == 0)) || ((((((((((((((((_local13 == null)) && ((_local23 == null)))) && ((_local22 == null)))) && ((_local15 == null)))) && ((_local5 == null)))) && ((_local6 == null)))) && ((_local14 == null)))) && ((_local9 == null)))))) {
+			var len:int = openArray.length;
+			if ((((len == 0)) || ((((((((((((((((tc == null)) && ((cl == null)))) && ((cr == null)))) && ((bc == null)))) && ((tl == null)))) && ((tr == null)))) && ((bl == null)))) && ((br == null)))))) {
 				this.isFinish = false;
 				return;
 			}
-			var _local17:int;
-			_local21 = 0;
-			while (_local21 < _local19) {
-				_local8 = openArray[_local21];
-				if (_local21 == 0) {
-					_local7 = _local8;
+			var index:int;
+			i = 0;
+			while (i < len) {
+				td = openArray[i];
+				if (i == 0) {
+					tad = td;
 				} else {
-					if (_local8.F < _local7.F) {
-						_local7 = _local8;
-						_local17 = _local21;
+					if (td.F < tad.F) {
+						tad = td;
+						index = i;
 					}
 				}
-				_local21++;
+				i++;
 			}
-			this.nonce = _local7;
-			this.openArray.splice(_local17, 1);
-			var _local16:String = this.nonce.key;
-			if (this.colsePath[_local16] == null) {
-				this.colsePath[_local16] = this.nonce;
+			this.nonce = tad;
+			this.openArray.splice(index, 1);
+			var key:String = this.nonce.key;
+			if (this.colsePath[key] == null) {
+				this.colsePath[key] = this.nonce;
 				this.closeLength = (this.closeLength + 1);
 				if (closeLength > breakSetp) {
 					this.isFinish = false;
 				}
 			}
-			var _local10:String = ((endPoint.x + "|") + endPoint.y);
-			if (this.nonce.key == _local10) {
+			var key_end:String = ((endPoint.x + "|") + endPoint.y);
+			if (this.nonce.key == key_end) {
 				this.isFinish = false;
 			}
 			this.G = this.nonce.G;
 		}
-		public function pathCutter(array:Array, size:int=2):Array{
-			var _local4:Array = null;
-			var _local5:int;
-			var _local6:int;
-			var _local3:Array = [];
-			_local5 = 0;
-			while (_local5 < array.length) {
-				if ((_local5 % size) == 0) {
-					_local4 = [];
-					if (_local3.length > 0) {
-						_local4.push(array[(_local5 - 1)]);
+		
+		public function pathCutter(array:Array, size:int=2):Array
+		{
+			var tmp:Array = null;
+			var i:int;
+			var j:int;
+			var arr:Array = [];
+			i = 0;
+			while (i < array.length) {
+				if ((i % size) == 0) {
+					tmp = [];
+					if (arr.length > 0) {
+						tmp.push(array[(i - 1)]);
 					}
-					_local3.push(_local4);
+					arr.push(tmp);
 				}
-				_local4.push(array[_local5]);
-				_local5++;
+				tmp.push(array[i]);
+				i++;
 			}
-			_local6 = 0;
-			while (_local6 < _local3.length) {
-				_local3[_local6] = cleanPath(_local3[_local6]);
-				_local6++;
+			j = 0;
+			while (j < arr.length) {
+				arr[j] = cleanPath(arr[j]);
+				j++;
 			}
-			return _local3;
+			return arr;
 		}
-		private function cleanArray():Array{
-			var _local1:Number;
-			var _local4 = null;
-			var _local6:int;
-			var _local8:int;
-			var _local3:int;
-			var _local7:Boolean;
-			var _local9:int;
+		
+		private function cleanArray():Array
+		{
+			var min:Number;
+			var pt:Point = null;
+			var dix:int;
+			var diy:int;
+			var dis:int;
+			var run:Boolean;
+			var breakStep:int;
 			this.pathArray = [];
-			var _local10:String = ((this.endPoint.x + "|") + endPoint.y);
-			if (this.colsePath[_local10] == null) {
-				_local1 = -1;
-				for each (var _local5:TileAstarData in this.colsePath) {
-					if (_local5.pt) {
-						_local4 = _local5.pt;
-						_local6 = (endPoint.x - _local4.x);
-						((_local6)<0) ? _local6 = -(_local6) : _local6;
-						_local8 = (endPoint.y - _local4.y);
-						((_local8)<0) ? _local8 = -(_local8) : _local8;
-						_local3 = (_local6 + _local8);
-						if (_local1 == -1) {
-							_local1 = _local3;
-							_local10 = ((_local4.x + "|") + _local4.y);
+			var key:String = ((this.endPoint.x + "|") + endPoint.y);
+			if (this.colsePath[key] == null) {
+				min = -1;
+				for each (var o:TileAstarData in this.colsePath) {
+					if (o.pt) {
+						pt = o.pt;
+						dix = (endPoint.x - pt.x);
+						((dix)<0) ? dix = -(dix) : dix;
+						diy = (endPoint.y - pt.y);
+						((diy)<0) ? diy = -(diy) : diy;
+						dis = (dix + diy);
+						if (min == -1) {
+							min = dis;
+							key = ((pt.x + "|") + pt.y);
 						} else {
-							if (_local3 < _local1) {
-								_local1 = _local3;
-								_local10 = ((_local4.x + "|") + _local4.y);
+							if (dis < min) {
+								min = dis;
+								key = ((pt.x + "|") + pt.y);
 							}
 						}
 					}
 				}
-				if (this.colsePath[_local10] == null) {
+				if (this.colsePath[key] == null) {
 					this.pathArray;
 				}
 			}
-			var _local2:TileAstarData = this.colsePath[_local10];
-			if (_local2 != null) {
-				this.pathArray.unshift(TileUtils.tileToPixels(_local2.pt));
-				this.pathArray.unshift(TileUtils.tileToPixels(_local2.parent.pt));
-				_local7 = true;
-				_local9 = 0;
-				while (_local7) {
-					_local10 = this.colsePath[_local10].parent.key;
-					if ((((_local10 == ((startPoint.x + "|") + startPoint.y))) || ((_local9 > 10000)))) {
-						_local7 = false;
+			var co:TileAstarData = this.colsePath[key];
+			if (co != null) {
+				this.pathArray.unshift(TileUtils.tileToPixels(co.pt));
+				this.pathArray.unshift(TileUtils.tileToPixels(co.parent.pt));
+				run = true;
+				breakStep = 0;
+				while (run) {
+					key = this.colsePath[key].parent.key;
+					if ((((key == ((startPoint.x + "|") + startPoint.y))) || ((breakStep > 10000)))) {
+						run = false;
 						break;
 					}
-					this.pathArray.unshift(TileUtils.tileToPixels(this.colsePath[_local10].parent.pt));
-					_local9++;
+					this.pathArray.unshift(TileUtils.tileToPixels(this.colsePath[key].parent.pt));
+					breakStep++;
 				}
 			}
 			return this.pathArray;

@@ -84,8 +84,8 @@
 		protected var $topLayer:Sprite;
 		protected var $middleLayer:Sprite;
 		protected var $bottomLayer:Sprite;
-		protected var $mapLayer:MapLayer;
 		protected var $itemLayer:Sprite;
+		protected var $mapLayer:MapLayer;
 		protected var $nodeTree:NodeTree;
 		protected var $container:DisplayObjectContainer;
 		protected var $astart:TileAstar;
@@ -730,8 +730,9 @@
 		public function cleanCheck():void
 		{
 			var char = null;
+			var charx:Char = null;
+			
 			var i:int;
-			var charx = null;
 			var j:int;
 			var ok:Boolean;
 			var eff:AvatarEffect = null;
