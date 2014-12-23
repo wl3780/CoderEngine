@@ -17,8 +17,8 @@ package com.coder.core.protos
 		public function Proto()
 		{
 			registerClassAlias("com.coder.Proto", Proto);
-			_className_ = getQualifiedClassName(this);
 			_id_ = Asswc.getSoleId();
+			_className_ = getQualifiedClassName(this);
 		}
 		
 		/**

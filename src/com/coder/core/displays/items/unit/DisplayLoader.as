@@ -6,7 +6,6 @@
 	import com.coder.engine.Asswc;
 	import com.coder.interfaces.display.ILoader;
 	import com.coder.interfaces.system.IOrderDispatcher;
-	import com.coder.utils.Hash;
 	import com.coder.utils.ObjectUtils;
 	
 	import flash.display.Loader;
@@ -16,27 +15,30 @@
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
+	import flash.utils.getQualifiedClassName;
 
 	public class DisplayLoader extends Loader implements ILoader, IOrderDispatcher
 	{
 		private static var _elisor_:Elisor = Elisor.getInstance();
 		private static var loaderQueue:Vector.<DisplayLoader> = new Vector.<DisplayLoader>();
-		private static var hash:Hash = new Hash();
 
 		public var isDisposed:Boolean = false;
 		
-		protected var _path_:String;
-		protected var _className_:String;
 		protected var _id_:String;
 		protected var _oid_:String;
+		protected var _path_:String;
+		protected var _className_:String;
 		protected var _proto_:Object;
+		
 		protected var _callSuccess_:Function;
 		protected var _callError_:Function;
 		protected var _callProgress_:Function;
 
 		public function DisplayLoader()
 		{
+			super();
 			_id_ = Asswc.getSoleId();
+			_className_ = getQualifiedClassName(this);
 			WealthElisor.loaderInstanceHash.put(this.id, this);
 		}
 		
@@ -45,27 +47,28 @@
 			var loader:DisplayLoader = null;
 			if (loaderQueue.length) {
 				loader = loaderQueue.pop();
-				loader.pid = Asswc.getSoleId();
+				loader.id = Asswc.getSoleId();
 				loader.isDisposed = false;
 				WealthElisor.loaderInstanceHash.put(loader.id, loader);
 			} else {
-				loader new DisplayLoader();
+				loader = new DisplayLoader();
 			}
 			return loader;
 		}
 
 		public function loadElemt(url:String, successFunc:Function=null, errorFunc:Function=null, progressFunc:Function=null, loaderContext:LoaderContext=null):void
 		{
-			if (isDisposed) {
+			if (this.isDisposed) {
 				return;
 			}
 			
 			if (!url || url.indexOf("null") != -1) {
-				_errorFunc_(null);
+				if (errorFunc != null) {
+					errorFunc(url);
+				}
 				return;
 			}
 			
-			hash.put(url, url);
 			_path_ = url;
 			_callSuccess_ = successFunc;
 			_callError_ = errorFunc;
@@ -154,7 +157,7 @@
 		
 		public function setTimeOut(closureHandler:Function, delay:int, ... args):String
 		{
-			var params:Array = [this, closureHandler].concat(args);
+			var params:Array = [this, closureHandler, delay].concat(args);
 			return _elisor_.setTimeOut.apply(null, params);
 		}
 		
@@ -176,16 +179,15 @@
 		
 		public function removeTotalOrders():void
 		{
-			removeTotalEventOrder();
-			removeTotalFrameOrder();
+			this.removeTotalEventOrder();
+			this.removeTotalFrameOrder();
 		}
 		
 		public function get id():String
 		{
 			return _id_;
 		}
-		
-		internal function set pid(value:String):void
+		public function set id(value:String):void
 		{
 			_id_ = value;
 		}
@@ -232,16 +234,18 @@
 			WealthElisor.getInstance().cancelByPath(_path_);
 			WealthElisor.loaderInstanceHash.remove(this.id);
 			this.removeTotalOrders();
+			_id_ = null;
+			_oid_ = null;
 			_path_ = null;
 			_proto_ = null;
-			_oid_ = null;
-			_id_ = null;
 			_callError_ = null;
 			_callProgress_ = null;
 			_callSuccess_ = null;
 			this.isDisposed = true;
 			this.unload();
 			this.unloadAndStop();
+			// 放回对象池中
+			loaderQueue.push(this);
 		}
 
 	}

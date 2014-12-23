@@ -35,6 +35,13 @@
 		
 		public function loadElemt(url:String, successFunc:Function=null, errorFunc:Function=null, progressFunc:Function=null, loaderContext:LoaderContext=null):void
 		{
+			if (!url || url.indexOf("null") != -1) {
+				if (errorFunc != null) {
+					errorFunc(url);
+				}
+				return;
+			}
+			
 			_path_ = url;
 			_callSuccess_ = successFunc;
 			_callError_ = errorFunc;
@@ -129,12 +136,16 @@
 		
 		public function dispose():void
 		{
+			this.removeEventListener(Event.COMPLETE, _successFunc_);
+			this.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
+			this.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
 			WealthStoragePort.removeWealth(_path_);
 			WealthElisor.getInstance().cancelByPath(_path_);
+			WealthElisor.loaderInstanceHash.remove(this.id);
+			_id_ = null;
+			_oid_ = null;
 			_path_ = null;
 			_proto_ = null;
-			_oid_ = null;
-			_id_ = null;
 			_callError_ = null;
 			_callProgress_ = null;
 			_callSuccess_ = null;
@@ -142,7 +153,7 @@
 		
 		public function unloadAndStop(gc:Boolean=true):void
 		{
-			dispose();
+			this.dispose();
 		}
 
 	}

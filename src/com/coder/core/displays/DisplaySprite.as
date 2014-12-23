@@ -21,8 +21,8 @@
 
 		protected var _id_:String;
 		protected var _oid_:String;
-		protected var _proto_:Object;
 		protected var _type_:String;
+		protected var _proto_:Object;
 		protected var _enabled_:Boolean;
 		protected var _className_:String;
 		protected var _isDisposed_:Boolean;
@@ -30,7 +30,7 @@
 		public function DisplaySprite()
 		{
 			super();
-			init();
+			this.init();
 		}
 		
 		protected function init():void
@@ -41,9 +41,6 @@
 		
 		override public function addChild(child:DisplayObject):DisplayObject
 		{
-			if (getQualifiedClassName(child).indexOf("Sprite") != -1) {
-				child;
-			}
 			return super.addChild(child);
 		}
 		
@@ -100,8 +97,8 @@
 		
 		public function removeTotalOrders():void
 		{
-			removeTotalEventOrder();
-			removeTotalFrameOrder();
+			this.removeTotalFrameOrder();
+			this.removeTotalEventOrder();
 		}
 		
 		public function set enabled(value:Boolean):void
@@ -174,7 +171,7 @@
 		{
 			_isDisposed_ = false;
 			_enabled_ = false;
-			init();
+			this.init();
 		}
 		
 		public function dispose():void
@@ -185,14 +182,14 @@
 			}
 			this.removeTotalOrders();
 			DisplayObjectPort.removeTarget(this);
-			_proto_ = null;
-			_oid_ = null;
 			_id_ = null;
-			_enabled_ = true;
+			_oid_ = null;
 			_type_ = null;
-			this.graphics.clear();
-			removeDisplayObject(this);
+			_proto_ = null;
+			_enabled_ = true;
 			_isDisposed_ = true;
+			this.graphics.clear();
+			this.removeDisplayObject(this);
 		}
 		
 		override public function toString():String
