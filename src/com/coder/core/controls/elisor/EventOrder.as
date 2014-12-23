@@ -71,11 +71,6 @@
 				pispatcher.removeEventListener(this.type, _listener_);
 			}
 		}
-		
-		public function set className(value:String):void
-		{
-			_className_ = value;
-		}
 
 	}
 }

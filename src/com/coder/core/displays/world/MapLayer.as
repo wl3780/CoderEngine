@@ -686,15 +686,15 @@
 				loader = null;
 			}
 			this.graphics.clear();
-			if (Engine.currMemory >= 700) {
+			if (Engine.currMemory >= Engine.cleanMemoryValue) {
 				Log.debug(this, "回收小地切片图前内存:", Engine.currMemory);
-				for each (var _local1:Loader in requestHash) {
-					_local1.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
-					_local1.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
-					_local1.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
-					requestHash.remove(_local1.name);
-					_local1.unloadAndStop();
-					loaderQueue.push(_local1);
+				for each (var tmpLoader:Loader in requestHash) {
+					tmpLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedFunc);
+					tmpLoader.contentLoaderInfo.removeEventListener(Event.UNLOAD, onUnloadFunc);
+					tmpLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onErrorFunc);
+					requestHash.remove(tmpLoader.name);
+					tmpLoader.unloadAndStop();
+					loaderQueue.push(tmpLoader);
 				}
 			}
 			loadHash.reset();

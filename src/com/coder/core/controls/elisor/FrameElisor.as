@@ -21,16 +21,16 @@
 		private var enterFrameHeartbeatState:Vector.<Boolean>;
 		private var enterFrameHeartbeatIndex:int;
 		
+		private var onStageFrameOrder:Vector.<Function>;
+		private var onStageDisplays:Vector.<DisplayObject>;
+		private var onStageHeartbeatState:Vector.<Boolean>;
+		private var onStageHeartbeatIndex:int;
+		
 		private var intervalFrameOrder:Vector.<Function>;
 		private var intervalQueue:Vector.<int>;
 		private var intervalCountQueue:Vector.<int>;
 		private var intervalHeartbeatState:Vector.<Boolean>;
 		private var intervalHeartbeatIndex:int;
-		
-		private var onStageFrameOrder:Vector.<Function>;
-		private var onStageDisplays:Vector.<DisplayObject>;
-		private var onStageHeartbeatState:Vector.<Boolean>;
-		private var onStageHeartbeatIndex:int;
 		
 		private var delayFrameOrder:Vector.<Function>;
 		private var delayFrameQueue:Vector.<int>;
@@ -89,6 +89,7 @@
 			
 			FPSUtils.fps < 3 ? heartbeatSize = 2 : heartbeatSize = 6;
 			onEnterFrameHandler();
+			onStageFrameHandler();
 			onIntervalHandler();
 			onDelayHandler();
 		}
@@ -115,6 +116,32 @@
 					applyHandler.apply();
 				}
 				enterFrameHeartbeatIndex ++;
+				tmp--;
+			}
+		}
+		
+		private function onStageFrameHandler():void
+		{
+			var orderNum:int = onStageFrameOrder.length;
+			if (orderNum <= 0) {
+				return;
+			}
+			
+			var applyHandler:Function = null;
+			var state:Boolean;
+			var orderIndex:int = Math.ceil(orderNum / heartbeatSize);
+			var tmp:int = orderNum - orderIndex;
+			while (tmp >= 0 && !_stop) {
+				if (onStageHeartbeatIndex >= onStageFrameOrder.length) {
+					onStageHeartbeatIndex = 0;
+				}
+				
+				applyHandler = onStageFrameOrder[onStageHeartbeatIndex];
+				state = onStageHeartbeatState[onStageHeartbeatIndex];
+				if (!state && applyHandler != null) {
+					applyHandler.apply();
+				}
+				onStageHeartbeatIndex ++;
 				tmp--;
 			}
 		}
@@ -163,10 +190,9 @@
 			}
 			
 			var applyHandler:Function = null;
-			var delay:int;
+			var time:int;
 			var state:Boolean;
 			var order:FrameOrder = null;
-			var index:int;
 			var orderIndex:int = Math.ceil(orderNum / heartbeatSize);
 			var tmp:int = orderNum - orderIndex;
 			while (tmp >= 0 && !_stop) {
@@ -174,27 +200,20 @@
 					delayHeartbeatIndex = 0;
 				}
 				applyHandler = delayFrameOrder[delayHeartbeatIndex];
-				delay = delayFrameQueue[delayHeartbeatIndex];
+				time = delayFrameQueue[delayHeartbeatIndex];
 				state = delayHeartbeatState[delayHeartbeatIndex];
-				if (!state && applyHandler != null && (getTimer() - delay) >= 0) {
+				if (!state && applyHandler != null && (getTimer() - time) >= 0) {
 					order = hash.remove(applyHandler) as FrameOrder;
 					if (order.proto) {
 						applyHandler.apply(null, [order.proto]);
 					} else {
 						applyHandler.apply();
 					}
-					index = delayFrameOrder.indexOf(applyHandler);
-					if (index != -1) {
-						delayFrameOrder.splice(index, 1);
-						delayFrameQueue.splice(index, 1);
-						delayHeartbeatState.splice(index, 1);
-						if (index >= delayHeartbeatIndex) {
-							delayHeartbeatIndex = (delayHeartbeatIndex - 1);
-						}
-						if (delayHeartbeatIndex < 0) {
-							delayHeartbeatIndex = 0;
-						}
-					}
+					// 移除
+					delayFrameOrder.splice(delayHeartbeatIndex, 1);
+					delayFrameQueue.splice(delayHeartbeatIndex, 1);
+					delayHeartbeatState.splice(delayHeartbeatIndex, 1);
+					
 					order.dispose();
 					delayHeartbeatIndex --;
 				}
@@ -220,7 +239,7 @@
 				this.stop = true;
 				hash.put(applyHandler, order);
 				if (OrderMode.ENTER_FRAME_ORDER == order.orderMode) {
-					if (order.display) {
+					if (order.isOnStageHandler) {
 						onStageFrameOrder.push(applyHandler);
 						onStageDisplays.push(order.display);
 						onStageHeartbeatState.push(order.stop);
@@ -231,7 +250,7 @@
 				} else if (OrderMode.INTERVAL_FRAME_ORDER == order.orderMode) {
 					intervalFrameOrder.push(applyHandler);
 					intervalQueue.push(order.value);
-					intervalCountQueue.push(getTimer() + order.value);
+					intervalCountQueue.push(getTimer());
 					intervalHeartbeatState.push(order.stop);
 				} else if (OrderMode.DELAY_FRAME_ORDER == order.orderMode) {
 					delayFrameOrder.push(applyHandler);
@@ -252,14 +271,14 @@
 			var index:int;
 			this.stop = true;
 			if (OrderMode.ENTER_FRAME_ORDER == order.orderMode) {
-				if (order.display) {
+				if (order.isOnStageHandler) {
 					index = onStageFrameOrder.indexOf(applyHandler);
 					if (index != -1) {
 						onStageDisplays.splice(index, 1);
 						onStageFrameOrder.splice(index, 1);
 						onStageHeartbeatState.splice(index, 1);
 						if (index >= onStageHeartbeatIndex) {
-							onStageHeartbeatIndex = onStageHeartbeatIndex - 1;
+							onStageHeartbeatIndex --;
 						}
 						if (onStageHeartbeatIndex < 0) {
 							onStageHeartbeatIndex = 0;
@@ -271,7 +290,7 @@
 						enterFrameOrder.splice(index, 1);
 						enterFrameHeartbeatState.splice(index, 1);
 						if (index >= enterFrameHeartbeatIndex) {
-							enterFrameHeartbeatIndex = enterFrameHeartbeatIndex - 1;
+							enterFrameHeartbeatIndex --;
 						}
 						if (enterFrameHeartbeatIndex < 0) {
 							enterFrameHeartbeatIndex = 0;
@@ -286,7 +305,7 @@
 					intervalCountQueue.splice(index, 1);
 					intervalHeartbeatState.splice(index, 1);
 					if (index >= intervalHeartbeatIndex) {
-						intervalHeartbeatIndex = intervalHeartbeatIndex - 1;
+						intervalHeartbeatIndex --;
 					}
 					if (intervalHeartbeatIndex < 0) {
 						intervalHeartbeatIndex = 0;
@@ -299,7 +318,7 @@
 					delayFrameQueue.splice(index, 1);
 					delayHeartbeatState.splice(index, 1);
 					if (index >= delayHeartbeatIndex) {
-						delayHeartbeatIndex = delayHeartbeatIndex - 1;
+						delayHeartbeatIndex --;
 					}
 					if (delayHeartbeatIndex < 0) {
 						delayHeartbeatIndex = 0;
@@ -320,7 +339,7 @@
 			var index:int;
 			order.stop = false;
 			if (OrderMode.ENTER_FRAME_ORDER == order.orderMode) {
-				if (order.display) {
+				if (order.isOnStageHandler) {
 					index = onStageFrameOrder.indexOf(applyHandler);
 					if (index != -1) {
 						onStageHeartbeatState[index] = false;
@@ -353,8 +372,8 @@
 			
 			var index:int;
 			order.stop = true;
-			if (OrderMode.ENTER_FRAME_ORDER === order.orderMode) {
-				if (order.display) {
+			if (OrderMode.ENTER_FRAME_ORDER == order.orderMode) {
+				if (order.isOnStageHandler) {
 					index = onStageFrameOrder.indexOf(applyHandler);
 					if (index != -1) {
 						onStageHeartbeatState[index] = true;
@@ -385,7 +404,7 @@
 			}
 			for each (var order:FrameOrder in hash) {
 				if (order.oid == group_id) {
-					this.stopFrameGroup(group_id);
+					this.stopFrameOrder(order.applyHandler);
 				}
 			}
 		}
@@ -397,7 +416,7 @@
 			}
 			for each (var order:FrameOrder in hash) {
 				if (order.oid == group_id) {
-					this.startFrameGroup(group_id);
+					this.startFrameOrder(order.applyHandler);
 				}
 			}
 		}
@@ -409,7 +428,7 @@
 			}
 			for each (var order:FrameOrder in hash) {
 				if (order.oid == group_id) {
-					this.removeFrameGroup(group_id);
+					this.removeFrameOrder(order.applyHandler);
 				}
 			}
 		}

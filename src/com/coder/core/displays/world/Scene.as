@@ -111,15 +111,14 @@
 		{
 			$astart = new TileAstar();
 			mousePoint = new Point();
-			timer = new Timer(0);
+			
 			_mouseMovePoint_ = new Point();
 			effectItems = [];
 			stageIntersectsHash = new Dictionary();
 			tarHash = [];
 			instance = this;
+			
 			super();
-			this.mouseEnabled = false;
-			this.mouseChildren = false;
 			this.setup();
 			inited = true;
 		}
@@ -207,9 +206,9 @@
 					index++;
 				}
 				EngineGlobal.char_shadow = EngineGlobal.char_shadow_arr[0];
-				shape = null;
 			}
 			
+			timer = new Timer(0);
 			timer.addEventListener(TimerEvent.TIMER, timerFunc);
 			timer.start();
 			

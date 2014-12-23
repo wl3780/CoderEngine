@@ -47,6 +47,7 @@
 			var order:FrameOrder = FrameOrder.createFrameOrder();
 			order.value = delay;
 			order.setup(OrderMode.INTERVAL_FRAME_ORDER, target.id, heartBeatHandler);
+			order.proto = args;
 			FrameElisor.getInstance().addFrameOrder(order);
 		}
 		
