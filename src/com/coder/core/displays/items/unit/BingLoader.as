@@ -61,6 +61,7 @@
 		
 		protected function _errorFunc_(event:IOErrorEvent):void
 		{
+			WealthStoragePort.depositWealth(this.path, this.id);
 			if (_callError_ != null) {
 				var tmp:Function = _callError_;
 				_callError_ = null;

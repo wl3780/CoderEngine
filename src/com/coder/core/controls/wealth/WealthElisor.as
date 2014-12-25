@@ -79,18 +79,18 @@
 			var sign:Sign = wealthHash[url] as Sign;
 			if (sign == null) {
 				sign = new Sign();
-				wealthHash[url] = sign;
 				sign.path = url;
+				wealthHash[url] = sign;
 			}
 			if (sign.wealths.indexOf(owner) == -1) {
 				sign.wealths.push(owner);
 			}
 			
-			var loader:ILoader = null;
 			if (!sign.isLoaded && !sign.isPend) {
 				sign.lc = lc;
 				sign.isPend = true;
 				sign.wealth_id = owner;
+				var loader:ILoader = null;
 				if (wealthData.type == WealthConst.BING_WEALTH || wealthData.dataFormat == URLLoaderDataFormat.BINARY) {
 					loader = new BingLoader();
 					URLLoader(loader).dataFormat = wealthData.dataFormat;
@@ -115,21 +115,23 @@
 			
 			var wealthData:WealthData = null;
 			var wealthQueue:Object = null;
-			for each (var wealthId:String in wealths) {
-				wealthData = WealthData.getWealthData(wealthId);
-				wealthQueue = WealthQueueAlone.getWealthQueue(wealthData.wid);
-				if (wealthData && wealthQueue) {
-					if (wealthQueue is WealthQueueAlone) {
-						WealthQueueAlone(wealthQueue).setStateLimitIndex();
-					}
-					
-					if ("isPend" == proto) {
-						wealthData.isPend = value;
-						if (wealthData.loaded == false) {
-							wealthQueue._callSuccess_(wealthData.id);
+			for each (var wealth_id:String in wealths) {
+				wealthData = WealthData.getWealthData(wealth_id);
+				if (wealthData) {
+					wealthQueue = WealthQueueAlone.getWealthQueue(wealthData.wid);
+					if (wealthQueue) {
+						if (wealthQueue is WealthQueueAlone) {
+							WealthQueueAlone(wealthQueue).setStateLimitIndex();
 						}
-					} else if ("loaded" == proto) {
 						
+						if ("isPend" == proto) {
+							wealthData.isPend = value;
+						} else if ("loaded" == proto) {
+							wealthData.loaded = value;
+							if (wealthData.loaded) {
+								wealthQueue._callSuccess_(wealthData.id);
+							}
+						}
 					}
 				}
 			}
@@ -153,7 +155,7 @@
 				var wealthData:WealthData = WealthData.getWealthData(sign.wealth_id);
 				if (wealthData && sign.tryNum > 0) {
 					WealthStoragePort.disposeLoaderByWealth(sign.path);
-					sign.tryNum = sign.tryNum - 1;
+					sign.tryNum -= 1;
 					sign.isPend = false;
 					loadWealth(wealthData, sign.lc);
 				} else {
@@ -233,14 +235,11 @@
 				var url:String = wealthData.url;
 				var sign:Sign = wealthHash[url] as Sign;
 				if (sign) {
-					var index:int = sign.wealths.indexOf(url);
+					var index:int = sign.wealths.indexOf(wealth_id);
 					if (index != -1) {
 						sign.wealths.splice(index, 1);
 						if (sign.isPend && !sign.isLoaded && sign.wealths.length == 0) {
-							var loader:ILoader = loaderInstanceHash.remove(url) as ILoader;
-							if (loader) {
-								loader.dispose();
-							}
+							WealthStoragePort.disposeLoaderByWealth(url);
 						}
 					}
 				}
@@ -256,10 +255,7 @@
 			var sign:Sign = wealthHash[url] as Sign;
 			if (sign && sign.isPend && !sign.isLoaded) {
 				sign.wealths = new Vector.<String>();
-				var loader:ILoader = loaderInstanceHash.remove(url) as ILoader;
-				if (loader) {
-					loader.dispose();
-				}
+				WealthStoragePort.disposeLoaderByWealth(url);
 			}
 		}
 	}
@@ -288,7 +284,8 @@ class Sign extends Proto
 	override public function dispose():void
 	{
 		super.dispose();
-		this.path = null;
+		lc = null;
+		path = null;
 		wealths = null;
 		wealth_id = null;
 	}

@@ -1,6 +1,5 @@
 ﻿package com.coder.core.controls.wealth
 {
-	import com.coder.core.controls.elisor.Elisor;
 	import com.coder.core.events.WealthEvent;
 	import com.coder.core.events.WealthProgressEvent;
 	import com.coder.engine.Asswc;
@@ -155,12 +154,13 @@
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData && wealthData.loaded == false) {
-				_limitIndex = _limitIndex + 1;
+				_limitIndex += 1;
 				if (_limitIndex > _limitIndexMax) {
 					_limitIndex = _limitIndexMax;
 				}
 				wealthData.loaded = true;
 				wealthData.isPend = false;
+				wealthData.isSucc = true;
 				_wealthGroup_.removeWealthById(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_COMPLETE, wealthData.url, wealth_id, wealthData.oid);
 			}
@@ -170,12 +170,13 @@
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData && wealthData.loaded == false) {
-				_limitIndex = _limitIndex + 1;
+				_limitIndex += 1;
 				if (_limitIndex > _limitIndexMax) {
 					_limitIndex = _limitIndexMax;
 				}
 				wealthData.loaded = true;
 				wealthData.isPend = false;
+				wealthData.isSucc = false;
 				_wealthGroup_.removeWealthById(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_ERROR, wealthData.url, wealth_id, wealthData.oid);
 			}
@@ -259,16 +260,19 @@
 		
 		public function dispose():void
 		{
-			Elisor.getInstance().removeTotalFrameOrder(this);
+			timer.stop();
+			timer.removeEventListener(TimerEvent.TIMER, timerFunc);
+			timer = null;
+			
 			instanceHash.remove(this.id);
-			_proto_ = null;
-			_oid_ = null;
 			_id_ = null;
+			_oid_ = null;
+			_proto_ = null;
 			_className_ = null;
 			_delay = 0;
 			_delayTime = 0;
-			_isDispose_ = true;
 			_limitIndex = 0;
+			_isDispose_ = true;
 			_wealthGroup_.dispose();
 			_wealthGroup_ = null;
 			this.wealthElisor = null;

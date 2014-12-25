@@ -95,6 +95,7 @@
 			this.contentLoaderInfo.removeEventListener(Event.COMPLETE, _successFunc_);
 			this.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
 			this.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
+			WealthStoragePort.depositWealth(this.path, this.id);
 			
 			if (_callError_ != null) {
 				var tmp:Function = _callError_;

@@ -39,7 +39,7 @@
 		public static function disposeLoaderByWealth(path:String):void
 		{
 			var loader_id:String = _loaderInstanceHash_.remove(path) as String;
-			var loader:ILoader = WealthElisor.loaderInstanceHash.take(loader_id) as ILoader;
+			var loader:ILoader = WealthElisor.loaderInstanceHash.remove(loader_id) as ILoader;
 			if (loader) {
 				loader.dispose();
 			}

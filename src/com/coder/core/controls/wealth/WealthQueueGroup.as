@@ -174,13 +174,14 @@
 			return null;
 		}
 		
-		private final function _callSuccess_(wealth_id:String):void
+		internal final function _callSuccess_(wealth_id:String):void
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
 				_limitIndex += 1;
 				wealthData.loaded = true;
 				wealthData.isPend = false;
+				wealthData.isSucc = true;
 				var group:WealthGroup = updateWealthGroup(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_COMPLETE, wealthData.url, wealth_id, group.id);
 				if (group.loaded) {
@@ -190,13 +191,14 @@
 			}
 		}
 		
-		private final function _callError_(wealth_id:String):void
+		internal final function _callError_(wealth_id:String):void
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
 				_limitIndex += 1;
 				wealthData.loaded = true;
 				wealthData.isPend = false;
+				wealthData.isSucc = false;
 				var group:WealthGroup = updateWealthGroup(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_ERROR, wealthData.url, wealth_id, group.id);
 				if (group.loaded) {
@@ -205,7 +207,7 @@
 			}
 		}
 		
-		private final function _callProgress_(wealth_id:String, bytesLoaded:Number, bytesTotal:Number):void
+		internal final function _callProgress_(wealth_id:String, bytesLoaded:Number, bytesTotal:Number):void
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
