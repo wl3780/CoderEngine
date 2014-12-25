@@ -30,10 +30,10 @@
 		public var isSortOn:Boolean;
 		public var name:String;
 		
-		protected var _className_:String;
 		protected var _id_:String;
 		protected var _oid_:String;
 		protected var _proto_:Object;
+		protected var _className_:String;
 		protected var _isDispose_:Boolean;
 		
 		private var _delay:int = 15;
@@ -54,7 +54,7 @@
 			instanceHash.put(this.id, this);
 			wealthElisor = WealthElisor.getInstance();
 
-			_wealthGroup_ = new WealthGroup();
+			_wealthGroup_ = WealthGroup.createWealthGroup();
 			_wealthGroup_.oid = this.id;
 			
 			var checkPolicy:Boolean = false;
@@ -75,7 +75,7 @@
 
 		protected function timerFunc(event:TimerEvent):void
 		{
-			loop();
+			this.loop();
 		}
 		
 		public function set limitIndex(value:int):void
@@ -122,7 +122,7 @@
 		public function loop():void
 		{
 			var pass:Boolean = true;
-			if (name == "AvatarRequestElisor") {
+			if (name == WealthConst.AVATAR_REQUEST_WEALTH) {
 				pass = false;
 				if ((getTimer() - avatarRequestElisorTime) > 500) {
 					pass = true;
@@ -130,21 +130,23 @@
 			}
 			if (!_stop && pass && (getTimer() - _delayTime) > _delay) {
 				_delayTime = getTimer();
-				loadWealth();
+				this.loadWealth();
 			}
 		}
 		
 		public function loadWealth():void
 		{
 			if (_wealthGroup_ && _wealthGroup_.length && !WealthElisor.isClearing && !_stop) {
-				if (!WealthElisor.isClearing && !_stop) {
-					var wealthData:WealthData = null;
-					for (var index:int = 0; index < _limitIndex; index++) {
+				var index:int = 0;
+				var wealthData:WealthData = null;
+				while (index < _limitIndex) {
+					if (!WealthElisor.isClearing && !_stop) {
 						wealthData = _wealthGroup_.getNextNeedWealthData();
 						if (wealthData) {
 							wealthElisor.loadWealth(wealthData, loaderContext);
 						}
 					}
+					index++;
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 ﻿package com.coder.core.controls.wealth
 {
-	import com.coder.engine.Asswc;
 	import com.coder.core.protos.Proto;
+	import com.coder.engine.Asswc;
 	import com.coder.utils.Hash;
 	import com.coder.utils.log.Log;
 	
@@ -15,6 +15,7 @@
 		public var data:Object;
 		public var dataFormat:String = URLLoaderDataFormat.TEXT;
 		public var loaded:Boolean;
+		public var isSucc:Boolean;
 		public var time:int;
 		public var prio:int = 5;
 		
@@ -27,6 +28,7 @@
 
 		public function WealthData()
 		{
+			super();
 			instanceHash.put(this.id, this);
 		}
 		
@@ -35,14 +37,14 @@
 			return instanceHash.take(id) as WealthData;
 		}
 		
-		public static function resetInstanceHash():void
-		{
-			instanceHash.reset();
-		}
-		
 		public static function removeWealthData(id:String):WealthData
 		{
 			return instanceHash.remove(id) as WealthData;
+		}
+		
+		public static function resetInstanceHash():void
+		{
+			instanceHash.reset();
 		}
 
 		public function set wid(value:String):void
@@ -67,12 +69,10 @@
 					_suffix = _suffix.split("?").shift();
 					if (Asswc.SWF_Files.indexOf(_suffix) != -1) {
 						_type = WealthConst.SWF_WEALTH;
+					} else if (Asswc.IMG_Files.indexOf(_suffix) != -1) {
+						_type = WealthConst.IMG_WEALTH;
 					} else {
-						if (Asswc.IMG_Files.indexOf(_suffix) != -1) {
-							_type = WealthConst.IMG_WEALTH;
-						} else {
-							_type = WealthConst.BING_WEALTH;
-						}
+						_type = WealthConst.BING_WEALTH;
 					}
 				} catch(e:Error) {
 					Log.error(this, toString() + "请检查资源地址格式是否正确");

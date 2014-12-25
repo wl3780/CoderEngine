@@ -2,6 +2,7 @@
 {
 	import com.coder.core.protos.Proto;
 	import com.coder.engine.Asswc;
+	import com.coder.global.EngineGlobal;
 	import com.coder.utils.Hash;
 	
 	import flash.net.URLLoaderDataFormat;
@@ -14,8 +15,6 @@
 		internal static var _recoverIndex_:int = 10;
 
 		public var type:int;
-		public var index:int;
-		public var position:int;
 		public var loadedIndex:int;
 		
 		protected var _isDisposed_:Boolean;
@@ -81,7 +80,7 @@
 			if (prio != -1) {
 				wealthData.prio = 0;
 			}
-			if (url.indexOf(".sm") != -1) {
+			if (url.indexOf(EngineGlobal.SM_EXTENSION) != -1) {
 				wealthData.prio = 0;
 			}
 			if (dataFormat) {
@@ -122,7 +121,7 @@
 				delete _wealths[id];
 				var index:int = _wealthUrls.indexOf(wealthData);
 				_wealthUrls.splice(index, 1);
-				WealthElisor.getInstance().cancelWealth(id);
+				WealthElisor.getInstance().cancelWealth(wealthData.id);
 			}
 		}
 		
@@ -191,6 +190,7 @@
 				if (wealthData) {
 					if (!wealthData.loaded) {
 						_loaded_ = false;
+						break;
 					} else {
 						loadedCount++;
 					}

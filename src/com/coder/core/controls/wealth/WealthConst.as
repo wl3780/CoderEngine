@@ -28,5 +28,10 @@
 		 */		
         public static const PRIORITY_LEVEL:int = 2;
 
+		/**
+		 * 特殊加载器
+		 */		
+		public static const AVATAR_REQUEST_WEALTH:String = "AvatarRequestElisor";
+		
     }
 }

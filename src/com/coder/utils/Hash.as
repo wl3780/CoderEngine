@@ -55,7 +55,7 @@
             var result:Object = this[key];
             delete this[key];
             if (isHas) {
-                _length = _length - 1;
+                _length --;
             }
             return result;
         }

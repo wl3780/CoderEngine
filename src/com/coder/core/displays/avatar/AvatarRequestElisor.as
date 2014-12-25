@@ -1,6 +1,7 @@
 ﻿package com.coder.core.displays.avatar
 {
 	import com.coder.core.controls.elisor.Elisor;
+	import com.coder.core.controls.wealth.WealthConst;
 	import com.coder.core.controls.wealth.WealthData;
 	import com.coder.core.controls.wealth.WealthElisor;
 	import com.coder.core.controls.wealth.WealthQueueAlone;
@@ -116,7 +117,7 @@
 			_wealthQueue_.loaderContext = null;
 			_wealthQueue_.delay = 18;
 			_wealthQueue_.limitIndex = loadIndex;
-			_wealthQueue_.name = "AvatarRequestElisor";
+			_wealthQueue_.name = WealthConst.AVATAR_REQUEST_WEALTH;
 			_wealthQueue_.isSortOn = true;
 			_wealthQueue_.addEventListener(WealthEvent.WEALTH_COMPLETE, onWealthLoadFunc);
 			Elisor.getInstance().addFrameOrder(this, heartBeatHandler);

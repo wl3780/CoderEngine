@@ -20,10 +20,10 @@
 		public var loaderContext:LoaderContext;
 		public var name:String;
 		
-		protected var _className_:String;
 		protected var _id_:String;
 		protected var _oid_:String;
 		protected var _proto_:Object;
+		protected var _className_:String;
 		protected var _isDispose_:Boolean;
 		
 		private var _delay:int = 0;
@@ -66,7 +66,7 @@
 		
 		public function loop():void
 		{
-			if (stop) {
+			if (_stop) {
 				return;
 			}
 			if ((getTimer() - _delayTime) > _delay) {
@@ -102,13 +102,12 @@
 		
 		public function removeWealthGroup(gid:String):void
 		{
-			var index:int;
-			var group:WealthGroup = (_wealthKeyHash.take(gid) as WealthGroup);
+			var group:WealthGroup = _wealthKeyHash.take(gid) as WealthGroup;
 			if (group) {
 				for each (var wealthData:WealthData in group.wealths) {
 					wealthElisor.cancelWealth(wealthData.id);
 				}
-				index = _wealthGroupQueue.indexOf(group);
+				var index:int = _wealthGroupQueue.indexOf(group);
 				if (index != -1) {
 					_wealthGroupQueue.splice(index, 1);
 				}
@@ -117,10 +116,9 @@
 		
 		public function removeWealthById(wealth_id:String):void
 		{
-			var group:WealthGroup = null;
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData && wealthData.oid) {
-				group = _wealthKeyHash.take(id) as WealthGroup;
+				var group:WealthGroup = _wealthKeyHash.take(wealthData.oid) as WealthGroup;
 				if (group) {
 					group.removeWealthById(wealth_id);
 				}
@@ -178,13 +176,12 @@
 		
 		private final function _callSuccess_(wealth_id:String):void
 		{
-			var group:WealthGroup = null;
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
-				_limitIndex = _limitIndex + 1;
+				_limitIndex += 1;
 				wealthData.loaded = true;
 				wealthData.isPend = false;
-				group = updateWealthGroup(wealth_id);
+				var group:WealthGroup = updateWealthGroup(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_COMPLETE, wealthData.url, wealth_id, group.id);
 				if (group.loaded) {
 					this.dispatchWealthEvent(WealthEvent.WEALTH_GROUP_COMPLETE, wealthData.url, wealth_id, group.id);
@@ -195,13 +192,12 @@
 		
 		private final function _callError_(wealth_id:String):void
 		{
-			var group:WealthGroup = null;
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
-				_limitIndex = _limitIndex + 1;
+				_limitIndex += 1;
 				wealthData.loaded = true;
 				wealthData.isPend = false;
-				group = updateWealthGroup(wealth_id);
+				var group:WealthGroup = updateWealthGroup(wealth_id);
 				this.dispatchWealthEvent(WealthEvent.WEALTH_ERROR, wealthData.url, wealth_id, group.id);
 				if (group.loaded) {
 					this.dispatchWealthEvent(WealthEvent.WEALTH_GROUP_COMPLETE, wealthData.url, wealth_id, group.id);
@@ -240,18 +236,8 @@
 		{
 			var wealthData:WealthData = WealthData.getWealthData(wealth_id);
 			if (wealthData) {
-				wealthData.loaded = true;
 				var group:WealthGroup = this.takeWealthGroup(wealthData.oid);
-				group.loadedIndex = 0;
-				for (var index:int = 0; index < group.length; index++) {
-					wealthData = group.wealths[index];
-					if (wealthData.loaded) {
-						group.loadedIndex = group.loadedIndex + 1;
-					}
-				}
-				if (group.loadedIndex == group.length) {
-					group.loaded = true;
-				}
+				group.checkTotalFinish();
 				return group;
 			}
 			return null;
@@ -307,7 +293,7 @@
 		
 		override public function toString():String
 		{
-			return "[" + _className_ + "@" + _id_ + "]";
+			return "[" + _className_ + Asswc.SIGN + _id_ + "]";
 		}
 		
 		public function get className():String

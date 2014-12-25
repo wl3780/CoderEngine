@@ -23,10 +23,6 @@
 
 		private var loaderContext:LoaderContext;
 		private var wealthHash:Dictionary;
-		private var loadIndex:int;
-		private var loader:DisplayLoader;
-		
-		private var _limitIndex:int = 2;
 
 		public function WealthElisor()
 		{
@@ -204,7 +200,7 @@
 					wealthData = WealthData.getWealthData(wealthId);
 					if (wealthData) {
 						wealthQueue = WealthQueueAlone.getWealthQueue(wealthData.wid) as Object;
-						if (wealthQueue && wealthQueue.name != "AvatarRequestElisor") {
+						if (wealthQueue && wealthQueue.name != WealthConst.AVATAR_REQUEST_WEALTH) {
 							wealthQueue._callProgress_(wealthData.id, bytesLoaded, bytesTotal);
 						}
 					}
