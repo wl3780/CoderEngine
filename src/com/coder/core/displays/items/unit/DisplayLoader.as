@@ -232,8 +232,6 @@
 			this.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
 			this.contentLoaderInfo.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
 			WealthStoragePort.removeWealth(_path_);
-			WealthElisor.getInstance().cancelByPath(_path_);
-			WealthElisor.loaderInstanceHash.remove(this.id);
 			this.removeTotalOrders();
 			_id_ = null;
 			_oid_ = null;

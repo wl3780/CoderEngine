@@ -38,7 +38,7 @@
 		
 		public static function disposeLoaderByWealth(path:String):void
 		{
-			var loader_id:String = _loaderInstanceHash_.remove(path) as String;
+			var loader_id:String = _loaderInstanceHash_.take(path) as String;
 			var loader:ILoader = WealthElisor.loaderInstanceHash.remove(loader_id) as ILoader;
 			if (loader) {
 				loader.dispose();
@@ -58,7 +58,7 @@
 		public static function getSymbolIntance(path:String, symbol:String=null):Object
 		{
 			var key:String = symbol ? path + Asswc.SIGN + symbol : path;
-			var result:* = _symbolIntanceHash_.take(key);
+			var result:Object = _symbolIntanceHash_.take(key);
 			if (result) {
 				return result;
 			}

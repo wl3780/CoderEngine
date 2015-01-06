@@ -61,7 +61,11 @@
 		
 		protected function _errorFunc_(event:IOErrorEvent):void
 		{
+			this.removeEventListener(Event.COMPLETE, _successFunc_);
+			this.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
+			this.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
 			WealthStoragePort.depositWealth(this.path, this.id);
+			
 			if (_callError_ != null) {
 				var tmp:Function = _callError_;
 				_callError_ = null;
@@ -73,7 +77,11 @@
 		
 		protected function _successFunc_(event:Event):void
 		{
+			this.removeEventListener(Event.COMPLETE, _successFunc_);
+			this.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
+			this.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
 			WealthStoragePort.depositWealth(this.path, this.id);
+			
 			if (_callSuccess_ != null) {
 				var tmp:Function = _callSuccess_;
 				_callSuccess_ = null;
@@ -141,8 +149,6 @@
 			this.removeEventListener(IOErrorEvent.IO_ERROR, _errorFunc_);
 			this.removeEventListener(ProgressEvent.PROGRESS, _progressFunc_);
 			WealthStoragePort.removeWealth(_path_);
-			WealthElisor.getInstance().cancelByPath(_path_);
-			WealthElisor.loaderInstanceHash.remove(this.id);
 			_id_ = null;
 			_oid_ = null;
 			_path_ = null;

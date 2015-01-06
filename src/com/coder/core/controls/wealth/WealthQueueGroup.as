@@ -131,11 +131,11 @@
 				return;
 			}
 			
-			var tmpGroup:WealthGroup = null;
-			var index:int;
-			var wealthData:WealthData = null;
 			dur = getTimer();
 			if (_wealthGroupQueue.length) {
+				var tmpGroup:WealthGroup = null;
+				var wealthData:WealthData = null;
+				var index:int;
 				while (_limitIndex > 0 && !WealthElisor.isClearing && _wealthGroupQueue.length) {
 					tmpGroup = _wealthGroup;
 					_wealthGroup = getNeedWealthGroup();
@@ -203,6 +203,7 @@
 				this.dispatchWealthEvent(WealthEvent.WEALTH_ERROR, wealthData.url, wealth_id, group.id);
 				if (group.loaded) {
 					this.dispatchWealthEvent(WealthEvent.WEALTH_GROUP_COMPLETE, wealthData.url, wealth_id, group.id);
+					this.removeWealthGroup(group.id);
 				}
 			}
 		}
@@ -280,12 +281,13 @@
 		public function dispose():void
 		{
 			Elisor.getInstance().removeTotalFrameOrder(this);
-			_proto_ = null;
-			_oid_ = null;
+			
 			_id_ = null;
+			_oid_ = null;
+			_proto_ = null;
+			_isDispose_ = true;
 			_delay = 0;
 			_delayTime = 0;
-			_isDispose_ = true;
 			_limitIndex = 0;
 			_wealthGroup.dispose();
 			_wealthGroup = null;

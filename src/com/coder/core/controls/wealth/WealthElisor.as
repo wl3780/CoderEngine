@@ -269,9 +269,15 @@ class Sign extends Proto
 {
 	public var tryNum:int = 1;
 	public var path:String;
+	/**
+	 * 下载WealthData的id集合
+	 */	
 	public var wealths:Vector.<String>;
 	public var isPend:Boolean;
 	public var isLoaded:Boolean;
+	/**
+	 * 下载标示
+	 */	
 	public var wealth_id:String;
 	public var lc:LoaderContext;
 
