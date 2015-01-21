@@ -56,13 +56,11 @@
 
 	public class Scene extends DisplaySprite implements IScene
 	{
-
 		public static var stageRect:Rectangle;
 		public static var charGridsHash:Array = [];
 		public static var isDepthChange:Boolean;
 		
-		protected static var instance:Scene;
-		
+		private static var instance:Scene;
 		private static var stagePoint:Point = new Point();
 
 		public var isReady:Boolean;

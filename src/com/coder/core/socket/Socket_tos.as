@@ -1,6 +1,7 @@
 ﻿package com.coder.core.socket
 {
 	import com.coder.core.protos.Proto;
+	import com.coder.engine.Asswc;
 	import com.coder.interfaces.dock.ISocket_tos;
 	
 	import flash.utils.ByteArray;
@@ -63,7 +64,11 @@
 		
 		protected function writeInt(value:int):void
 		{
-			_bytes.writeInt(value);
+			if (Asswc.compress) {
+				ByteArrayUtil.writeInt(_bytes, value);
+			} else {
+				_bytes.writeInt(value);
+			}
 		}
 		
 		protected function writeBytes(value:ByteArray):void
@@ -75,9 +80,9 @@
 		
 		protected function writeLong(value:Number):void
 		{
-			var end:uint = value % 4294967296;
-			var head:uint = (value - end) / 4294967296;
-			_bytes.writeInt(head);
+			var end:uint = value;	// 高位自动丢弃
+			var head:int = (value - end) / 4294967296;
+			this.writeInt(head);
 			_bytes.writeUnsignedInt(end);
 		}
 	}

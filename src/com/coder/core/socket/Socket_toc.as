@@ -1,6 +1,7 @@
 ﻿package com.coder.core.socket
 {
 	import com.coder.core.protos.Proto;
+	import com.coder.engine.Asswc;
 	import com.coder.interfaces.dock.ISocket_toc;
 	
 	import flash.utils.ByteArray;
@@ -51,7 +52,11 @@
 		
 		protected function readInt():int
 		{
-			return _bytes.readInt();
+			if (Asswc.compress) {
+				return ByteArrayUtil.readInt(_bytes);
+			} else {
+				return _bytes.readInt();
+			}
 		}
 		
 		protected function readBoolean():Boolean
@@ -69,9 +74,9 @@
 		
 		protected function readLong():Number
 		{
-			var head:int = _bytes.readInt();
+			var head:int = this.readInt();
 			var end:uint = _bytes.readUnsignedInt();
-			return (head * 4294967296) + end;
+			return head * 4294967296 + end;
 		}
 	}
 }

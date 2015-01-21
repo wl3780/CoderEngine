@@ -17,6 +17,7 @@
 		public static var enabled:Boolean = true;
 		public static var sceneIntersects:Boolean;
 		public static var sceneClickEnabled:Boolean = true;
+		public static var compress:Boolean = false;	// 是否使用数据压缩
 		
 		public static var track:Function;
 		
