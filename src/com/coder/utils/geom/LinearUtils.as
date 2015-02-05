@@ -290,5 +290,13 @@
 		{
 			return radian * 180 / Math.PI;
 		}
+		
+		public static function getAngleWithPoint(p1:Point, p2:Point):Number
+		{
+			var dx:Number = p2.x - p1.x;
+			var dy:Number = p2.y - p1.y;
+			var radian:Number = Math.atan2(dy, dx);
+			return radian2Angle(radian);
+		}
 	}
 }

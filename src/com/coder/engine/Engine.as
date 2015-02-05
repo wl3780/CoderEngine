@@ -96,7 +96,7 @@
 			_RectangleHash_.push(value);
 		}
 		
-		public static function getPoint():Point
+		public static function getPoint(px:Number=0, py:Number=0):Point
 		{
 			var point:Point = null;
 			if (_PointleHash_.length) {
@@ -104,12 +104,12 @@
 			} else {
 				point = new Point();
 			}
+			point.x = px;
+			point.y = py;
 			return point;
 		}
 		public static function putPoint(value:Point):void
 		{
-			value.x = 0;
-			value.y = 0;
 			_PointleHash_.push(value);
 		}
 		

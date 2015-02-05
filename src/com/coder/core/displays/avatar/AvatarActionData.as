@@ -59,7 +59,7 @@
 
 		public static function checkNeedLoad(reflex:String, type:String, idName:String, act:String, dir:int):Boolean
 		{
-			var url:String = EngineGlobal.AVATAR_ASSETS_DIR + reflex + "/" + idName + Asswc.LINE + act + Asswc.LINE + dir + ".tmp";
+			var url:String = EngineGlobal.AVATAR_ASSETS_DIR + reflex + "/" + idName + Asswc.LINE + act + Asswc.LINE + dir + EngineGlobal.TMP_EXTENSION;
 			var loader:DisplayLoader = WealthStoragePort.takeLoaderByWealth(url) as DisplayLoader;
 			if (!loader) {
 				return true;
@@ -477,9 +477,11 @@
 			return _isReady_;
 		}
 		
-		public function get overTime():int{
-			return (_overTime_);
+		public function get overTime():int
+		{
+			return _overTime_;
 		}
+		
 		public function get totalFrames():uint
 		{
 			return _totalFrames_;

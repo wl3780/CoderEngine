@@ -57,6 +57,7 @@
 			this.mouseChildren = false;
 			this.tabEnabled = false;
 			this.tabChildren = false;
+			
 			super();
 			setup();
 		}
@@ -69,12 +70,13 @@
 		public static function createChar():AvatarEffect
 		{
 			var result:AvatarEffect = null;
-			if (recoverEffectAray.length){
+			if (recoverEffectAray.length) {
 				result = recoverEffectAray.pop();
 				result.reset();
-				return result;
+			} else {
+				result = new AvatarEffect();
 			}
-			return new AvatarEffect();
+			return result;
 		}
 
 		public function play(action:String, renderType:int=0, playEndFunc:Function=null, stopFrame:int=-1):void

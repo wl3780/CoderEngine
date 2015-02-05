@@ -116,7 +116,7 @@
 
 		public function init():void
 		{
-			_actPrve_ = "stand";
+			_actPrve_ = "stand";ActionConst.Stand
 			_actNext_ = "stand";
 			_actNow_ = "stand";
 			_dir_ = 0;
