@@ -147,9 +147,10 @@
 		{
 		}
 		
-		public function loadAvatarFormat(unit_id:String, idName:String):String{
+		public function loadAvatarFormat(unit_id:String, idName:String):String
+		{
 			if (!idName || idName == "null" || idName == "0") {
-				Log.error(this, "asdfasdf");
+				Log.error(this, "AvatarFormat id can not be null");
 			}
 			
 			var path:String = EngineGlobal.getAvatarAssetsConfigPath(idName);
@@ -253,7 +254,7 @@
 			try {
 				byte.position = 0;
 				byte.uncompress();
-			} catch(e:Error) {
+			} catch (e:Error) {
 				Log.error(this, "重复解压错？");
 				return;
 			}

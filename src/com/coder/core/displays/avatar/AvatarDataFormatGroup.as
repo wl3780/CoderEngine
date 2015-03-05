@@ -28,6 +28,7 @@
 			super();
 			actionGroup = new Hash();
 			quoteQueue = new Vector.<String>();
+			AvatarDataFormatGroup._instanceHash_.put(this.id, this);
 		}
 		
 		public static function takeAvatarDataFormatGroup(id:String):AvatarDataFormatGroup
@@ -46,10 +47,10 @@
 			if (_recoverQueue_.length) {
 				result = _recoverQueue_.pop();
 				result._id_ = Asswc.getSoleId();
+				AvatarDataFormatGroup._instanceHash_.put(result.id, result);
 			} else {
 				result = new AvatarDataFormatGroup();
 			}
-			AvatarDataFormatGroup._instanceHash_.put(result.id, result);
 			return result;
 		}
 

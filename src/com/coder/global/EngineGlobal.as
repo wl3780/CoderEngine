@@ -29,10 +29,10 @@
 			wid:"weapons",
 			wgid:"wings"
 		};
+		public static const eid:String = "eid";
 		public static const mid:String = "mid";
 		public static const wid:String = "wid";
 		public static const wgid:String = "wgid";
-		public static const eid:String = "eid";
 		public static const midm:String = "midm";
 		
 		public static const DELIMITER:String = "&";

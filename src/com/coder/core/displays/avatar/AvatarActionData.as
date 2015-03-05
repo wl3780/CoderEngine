@@ -82,14 +82,12 @@
 			var result:AvatarActionData = null;
 			if (_recoverQueue_.length) {
 				result = _recoverQueue_.pop();
-				AvatarActionData._instanceHash_.remove(result.id);
-				
 				result.reset();
 				result._id_ = Asswc.getSoleId();
+				AvatarActionData._instanceHash_.put(result.id, result);
 			} else {
 				result = new AvatarActionData();
 			}
-			AvatarActionData._instanceHash_.put(result.id, result);
 			return result;
 		}
 		
@@ -113,6 +111,12 @@
 				toDelete.dispose();
 			}
 			return toDelete;
+		}
+		
+		public function AvatarActionData()
+		{
+			super();
+			AvatarActionData._instanceHash_.put(this.id, this);
 		}
 
 		public function set offsetSpeed(value:uint):void

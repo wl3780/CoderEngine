@@ -87,7 +87,7 @@
 		
 		protected static function get effectIndex():String
 		{
-			_effectIndex_ = _effectIndex_ + 1;
+			_effectIndex_ += 1;
 			return _effectIndex_ + "";
 		}
 		
@@ -685,7 +685,7 @@
 			if (this.isDisposed) {
 				return null;
 			}
-			if ((!idName || idName == "0" || idName == "null") && passKey == null) {
+			if ((!idName || idName == "null" || idName == "0") && passKey == null) {
 				Log.error(this, "请求加载特效的 idName 不能为空 null 或者“0” ");
 				return "";
 			}
