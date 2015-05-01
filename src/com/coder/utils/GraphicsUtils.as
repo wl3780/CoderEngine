@@ -7,7 +7,6 @@
 
 	public class GraphicsUtils
 	{
-
 		private static var matrix:Matrix = new Matrix();
 
 		public static function draw(graphics:Graphics, bitmapData:BitmapData, pox:int, poy:int, width:int, height:int):void
@@ -49,6 +48,5 @@
 			var result:Number = targetWidth > targetHeight ? (minSize / targetWidth) : (minSize / targetHeight);
 			return result;
 		}
-
 	}
 }

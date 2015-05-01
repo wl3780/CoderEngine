@@ -8,14 +8,14 @@
 	/**
 	 * 重用资源
 	 */	
-    public class RecoverUtils
+	public class RecoverUtils
 	{
-        public static var matrix:Matrix = new Matrix();
+		public static var matrix:Matrix = new Matrix();
 		
-        public static var point:Point = new Point();
+		public static var point:Point = new Point();
 		
-        public static var rect:Rectangle = new Rectangle();
+		public static var rect:Rectangle = new Rectangle();
 		
-        public static var textFromat:TextFormat = new TextFormat();
-    }
+		public static var textFromat:TextFormat = new TextFormat();
+	}
 }
