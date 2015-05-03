@@ -10,32 +10,30 @@
 
 		public function NodeTreePool()
 		{
-			hash = new Hash();
+			this.hash = new Hash();
 		}
 		
 		public static function getInstance():NodeTreePool
 		{
 			if (_instance == null) {
-				_instance = new (NodeTreePool)();
+				_instance = new NodeTreePool();
 			}
 			return _instance;
 		}
 
 		public function put(value:NodeTree):void
 		{
-			if (this.hash[value.id] == null) {
-				this.hash[value.id] = value;
-			}
+			this.hash.put(value.id, value);
 		}
 		
 		public function take(id:String):NodeTree
 		{
-			return this.hash[id];
+			return this.hash.take(id);
 		}
 		
 		public function remove(id:String):void
 		{
-			delete this.hash[id]
+			this.hash.remove(id);
 		}
 	}
 } 

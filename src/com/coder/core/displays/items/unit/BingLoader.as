@@ -12,6 +12,7 @@
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.utils.getQualifiedClassName;
 
 	public class BingLoader extends URLLoader implements ILoader
 	{
@@ -30,6 +31,7 @@
 		{
 			super();
 			_id_ = Asswc.getSoleId();
+			_className_ = getQualifiedClassName(this);
 			WealthElisor.loaderInstanceHash.put(this.id, this);
 		}
 		
