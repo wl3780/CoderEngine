@@ -69,6 +69,7 @@ package com.coder.core.socket
 				value = value >>> 7;
 			}
 			bytes.writeByte(value & 127);
+			return;
 			
 			// 枚举版本
 			if (value < (1 << 7)) {

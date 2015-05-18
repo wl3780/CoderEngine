@@ -4,18 +4,14 @@
 	import com.coder.interfaces.dock.IMessage;
 	import com.coder.interfaces.dock.IProxy;
 	import com.coder.interfaces.dock.ISocket_tos;
-	
-	import flash.utils.getQualifiedClassName;
 
 	public class SubProxy extends Proto implements IProxy
 	{
 		private var _lock:Boolean;
-		private var _name:String;
 
 		public function SubProxy()
 		{
 			super();
-			_name = getQualifiedClassName(this);
 		}
 		
 		public function send(message:IMessage):void
@@ -36,11 +32,6 @@
 		{
 		}
 		
-		public function get name():String
-		{
-			return _name;
-		}
-		
 		public function get lock():Boolean
 		{
 			return _lock;
@@ -49,6 +40,7 @@
 		{
 			_lock = value;
 		}
+		
 		public function sendToModule(actionOrder:String, geter:String, data:Object=null):void
 		{
 			Message.sendToModule(actionOrder, geter, data, this.oid);

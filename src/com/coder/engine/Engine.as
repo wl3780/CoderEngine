@@ -154,9 +154,7 @@
 			SuperKey.getInstance().setup(stage);
 			HeartbeatFactory.getInstance().setup(stage);
 			GameTimer.getInstance().setup(stage);
-			if (moduleConstClass && networkModule) {
-				ModuleDock.setup(moduleConstClass, networkModule);
-			}
+			ModuleDock.setup(moduleConstClass, networkModule);
 			
 			Log.debug(this, "系统模块初始化完毕！");
 			recordAvatar.unit.isCharMode = true;
