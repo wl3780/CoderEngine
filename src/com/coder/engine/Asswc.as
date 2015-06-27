@@ -74,7 +74,7 @@
 		}
 		
 		/**
-		 * 防加速
+		 * 防加速，判断
 		 */		
 		private static function checkCheat():void
 		{
