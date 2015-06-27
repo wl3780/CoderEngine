@@ -28,7 +28,7 @@
 		
 		public function take(id:String):NodeTree
 		{
-			return this.hash.take(id);
+			return this.hash.take(id) as NodeTree;
 		}
 		
 		public function remove(id:String):void
